@@ -1,0 +1,80 @@
+import { AboutSplit, TeamSection, StatsBand, CTABanner, SectionHeading } from "@lifeterrain/ui";
+import { Leaf, GraduationCap, Building2, Globe2, Sprout } from "lucide-react";
+
+const FOCUS_AREAS = [
+  { icon: Leaf, title: "Research & Scientific Development", desc: "Promoting interdisciplinary studies, research collaborations, and innovative solutions across life sciences, environmental studies, ecology, wildlife and biodiversity." },
+  { icon: GraduationCap, title: "Training & Capacity Building", desc: "Specialised training programmes, professional courses, workshops, seminars and expert-led sessions to strengthen scientific and technical competence." },
+  { icon: Building2, title: "Industry & Corporate Applications", desc: "Bridging the gap between scientific research and industry by translating research outcomes into practical industrial and corporate applications." },
+  { icon: Sprout, title: "Environmental & Sustainability Initiatives", desc: "Promoting scientific approaches to environmental awareness, biodiversity conservation, sustainability and responsible decision-making." },
+  { icon: Globe2, title: "Knowledge Exchange & Collaboration", desc: "Creating platforms for interaction among researchers, academic institutions, industries, professionals and experts." },
+];
+
+const TEAM = [
+  {
+    name: "Dr. Anoop V.",
+    role: "Environmental Researcher, Trainer & Founder",
+    bio: "Founder of LifeTerrain Research and Training; leads course design and delivery across GHG accounting, carbon markets and environmental impact assessment.",
+    photoUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=70",
+  },
+  {
+    name: "Somnath Banerjee",
+    role: "Environmental Policy Expert, Researcher & Consultant",
+    bio: "Brings policy and regulatory depth to our carbon markets and sustainability programmes.",
+    photoUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=70",
+  },
+];
+
+export default function AboutPage() {
+  return (
+    <>
+      <div className="bg-forest-700 py-16 text-center text-white">
+        <h1 className="font-display text-3xl font-extrabold md:text-4xl">People · Knowledge · A Sustainable Tomorrow</h1>
+        <p className="mx-auto mt-3 max-w-2xl text-cream/80">
+          LifeTerrain Research &amp; Training (India) connects scientific research, knowledge and
+          real-world application to build a more sustainable tomorrow.
+        </p>
+      </div>
+
+      <StatsBand
+        stats={[
+          { value: 3, label: "Live Programmes Launched" },
+          { value: 10, label: "Days of Practical Training" },
+          { value: 100, suffix: "%", label: "Online & Interactive" },
+          { value: 2, label: "Expert Resource Persons" },
+        ]}
+      />
+
+      <AboutSplit
+        eyebrow="What We Do"
+        title="From Scientific Research to Real-World Practice"
+        imageUrl="https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=900&q=70"
+        imageAlt="Tall trees in a green forest"
+      >
+        <p>
+          We connect scientific research, knowledge, training, and real-world applications to create
+          meaningful learning and professional development opportunities. Our programmes support
+          students, researchers, academicians and professionals through learning that enhances
+          academic excellence, employability and interdisciplinary understanding.
+        </p>
+      </AboutSplit>
+
+      <section className="mx-auto max-w-6xl px-4 py-16 md:px-6">
+        <SectionHeading eyebrow="Our Focus Areas" title="How We Work" />
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {FOCUS_AREAS.map((f) => (
+            <div key={f.title} className="rounded-xl2 bg-white p-6 shadow-card">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-leaf-100 text-leaf-700">
+                <f.icon className="h-5 w-5" />
+              </span>
+              <h3 className="mt-4 font-display font-bold text-forest-700">{f.title}</h3>
+              <p className="mt-2 text-sm text-ink-500">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <TeamSection members={TEAM} />
+      <CTABanner />
+    </>
+  );
+}

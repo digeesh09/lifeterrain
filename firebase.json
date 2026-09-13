@@ -1,0 +1,19 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": [{ "source": "services/functions", "codebase": "default", "runtime": "nodejs20" }],
+  "hosting": [
+    {
+      "target": "web",
+      "public": "apps/web/out",
+      "rewrites": [{ "source": "**", "function": "nextServer" }]
+    },
+    {
+      "target": "admin",
+      "public": "apps/admin/out",
+      "rewrites": [{ "source": "**", "function": "nextServer" }]
+    }
+  ]
+}
