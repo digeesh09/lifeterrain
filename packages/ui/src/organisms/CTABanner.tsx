@@ -10,9 +10,9 @@ export function CTABanner() {
         <p className="relative mx-auto mt-3 max-w-xl text-cream/80">
           Join our next live cohort and build career-ready expertise in environment, sustainability and policy.
         </p>
-        <a href="/courses" className="relative mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-gold-500 px-7 py-3.5 text-lg font-display font-semibold text-forest-900 transition-colors hover:bg-gold-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold-300">
-          View Upcoming Courses
-        </a>
+          <a href="/courses" className="relative mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-gold-500 px-7 py-3.5 text-lg font-display font-semibold text-forest-900">
+            View Upcoming Courses
+          </a>
       </div>
     </section>
   );

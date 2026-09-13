@@ -5,6 +5,8 @@ export * from "./atoms/Input";
 export * from "./atoms/Card";
 export * from "./atoms/Spinner";
 
+export * from "./atoms/Reveal";
+
 // Molecules
 export * from "./molecules/CourseCard";
 export * from "./molecules/FormField";
@@ -27,3 +29,5 @@ export * from "./organisms/CTABanner";
 export * from "./organisms/WaveDivider";
 export * from "./organisms/PartnerStrip";
 export * from "./organisms/NewsletterBand";
+export * from "./organisms/CourseTimeline";
+export * from "./organisms/Lightbox";

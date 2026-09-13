@@ -42,3 +42,17 @@ pnpm dev
   Twilio if that's easier to get approved.
 - This is a complete, working scaffold — wire up your real Firebase project
   and API keys, run `pnpm dev`, and it's ready to take real enrollments.
+
+## Motion & interaction layer (packages/ui/src/atoms/Reveal.tsx)
+Every major section fades/slides in on scroll (`Reveal`), grids of cards
+stagger in one-by-one (`StaggerGroup`/`StaggerItem`), the hero has a
+parallax background + a scroll-cue, cards lift on hover, nav links get an
+animated underline, and buttons give press feedback. The course detail page
+uses `CourseTimeline` — a click-through day selector — instead of a flat
+grid, so a 10-day curriculum reads as a sequence rather than a wall of text.
+
+**Still needs real content to feel fully "yours" rather than a polished
+scaffold**: instructor bios/credentials, real testimonials, an actual
+photo gallery from past sessions, and a blog/updates feed — all flagged
+inline in `apps/web/app/page.tsx` and `app/about/page.tsx` where the
+placeholder copy and stock Unsplash images currently sit.

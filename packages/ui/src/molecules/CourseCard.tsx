@@ -1,5 +1,6 @@
+"use client";
+
 import { Badge } from "../atoms/Badge";
-import { Button } from "../atoms/Button";
 import { Card } from "../atoms/Card";
 import { CalendarDays, Clock, Laptop } from "lucide-react";
 
@@ -52,9 +53,9 @@ export function CourseCard({ course, onView }: { course: CourseSummary; onView?:
               <span className="ml-2 text-xs text-ink-500 line-through">₹{course.earlyBirdFee}</span>
             )}
           </div>
-          <Button size="sm" onClick={() => onView?.(course.slug)}>
+          <a href={`/courses/${course.slug}`} className="inline-flex items-center justify-center gap-2 rounded-full bg-forest-700 px-3 py-1.5 text-sm font-display font-semibold text-white transition-colors hover:bg-forest-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-forest-500">
             View & Enroll
-          </Button>
+          </a>
         </div>
       </div>
     </Card>

@@ -37,8 +37,13 @@ export function Navbar({
 
         <div className="hidden items-center gap-6 md:flex">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="text-sm font-semibold text-ink-700 hover:text-forest-700">
+            <a
+              key={l.href}
+              href={l.href}
+              className="group relative text-sm font-semibold text-ink-700 hover:text-forest-700"
+            >
               {l.label}
+              <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-leaf-500 transition-all duration-300 group-hover:w-full" />
             </a>
           ))}
           {isAuthed ? (
@@ -51,9 +56,9 @@ export function Navbar({
               </Button>
             </>
           ) : (
-            <Button size="sm" onClick={() => (window.location.href = "/login")}>
+            <a href="/login" className="inline-flex items-center justify-center gap-2 rounded-full bg-forest-700 px-3 py-1.5 text-sm font-display font-semibold text-white transition-colors hover:bg-forest-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-forest-500">
               Login / Register
-            </Button>
+            </a>
           )}
         </div>
 
@@ -69,9 +74,9 @@ export function Navbar({
               {l.label}
             </a>
           ))}
-          <Button size="sm" onClick={() => (window.location.href = isAuthed ? "/dashboard" : "/login")}>
+          <a href={isAuthed ? "/dashboard" : "/login"} className="inline-flex items-center justify-center gap-2 rounded-full bg-forest-700 px-3 py-1.5 text-sm font-display font-semibold text-white transition-colors hover:bg-forest-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-forest-500">
             {isAuthed ? "My Dashboard" : "Login / Register"}
-          </Button>
+          </a>
         </div>
       )}
     </header>

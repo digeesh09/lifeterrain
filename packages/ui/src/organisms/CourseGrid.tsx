@@ -1,5 +1,6 @@
 import { CourseCard, CourseSummary } from "../molecules/CourseCard";
 import { SectionHeading } from "../molecules/SectionHeading";
+import { StaggerGroup, StaggerItem } from "../atoms/Reveal";
 
 export function CourseGrid({ courses, onView }: { courses: CourseSummary[]; onView?: (slug: string) => void }) {
   return (
@@ -12,11 +13,13 @@ export function CourseGrid({ courses, onView }: { courses: CourseSummary[]; onVi
       {courses.length === 0 ? (
         <p className="text-ink-500">No courses are open for registration right now. Check back soon.</p>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <StaggerGroup className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {courses.map((c) => (
-            <CourseCard key={c.slug} course={c} onView={onView} />
+            <StaggerItem key={c.slug}>
+              <CourseCard course={c} onView={onView} />
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerGroup>
       )}
     </section>
   );

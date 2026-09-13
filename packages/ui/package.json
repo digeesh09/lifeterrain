@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "clsx": "^2.1.1",
-    "lucide-react": "^0.436.0"
+    "lucide-react": "^0.436.0",
+    "framer-motion": "^11.3.19"
   }
 }

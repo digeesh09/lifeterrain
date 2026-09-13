@@ -1,4 +1,4 @@
-import { AboutSplit, TeamSection, StatsBand, CTABanner, SectionHeading } from "@lifeterrain/ui";
+import { AboutSplit, TeamSection, StatsBand, CTABanner, SectionHeading, Reveal, StaggerGroup, StaggerItem } from "@lifeterrain/ui";
 import { Leaf, GraduationCap, Building2, Globe2, Sprout } from "lucide-react";
 
 const FOCUS_AREAS = [
@@ -60,21 +60,27 @@ export default function AboutPage() {
 
       <section className="mx-auto max-w-6xl px-4 py-16 md:px-6">
         <SectionHeading eyebrow="Our Focus Areas" title="How We Work" />
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <StaggerGroup className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {FOCUS_AREAS.map((f) => (
-            <div key={f.title} className="rounded-xl2 bg-white p-6 shadow-card">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-leaf-100 text-leaf-700">
-                <f.icon className="h-5 w-5" />
-              </span>
-              <h3 className="mt-4 font-display font-bold text-forest-700">{f.title}</h3>
-              <p className="mt-2 text-sm text-ink-500">{f.desc}</p>
-            </div>
+            <StaggerItem key={f.title}>
+              <div className="h-full rounded-xl2 bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-leaf-100 text-leaf-700">
+                  <f.icon className="h-5 w-5" />
+                </span>
+                <h3 className="mt-4 font-display font-bold text-forest-700">{f.title}</h3>
+                <p className="mt-2 text-sm text-ink-500">{f.desc}</p>
+              </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerGroup>
       </section>
 
-      <TeamSection members={TEAM} />
-      <CTABanner />
+      <Reveal>
+        <TeamSection members={TEAM} />
+      </Reveal>
+      <Reveal>
+        <CTABanner />
+      </Reveal>
     </>
   );
 }
