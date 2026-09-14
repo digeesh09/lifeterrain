@@ -67,8 +67,8 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
           <p className="text-sm text-cream/70">Course Fee</p>
           <p className="font-display text-2xl font-extrabold">₹{course.fee}</p>
         </div>
-        <Link href={`/register/${course.slug}`} className="inline-flex items-center justify-center gap-2 rounded-full bg-gold-500 px-7 py-3.5 text-lg font-display font-semibold text-forest-900 transition-colors hover:bg-gold-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold-300">
-          Register &amp; Pay
+        <Link href={`/register/${course.slug}`}>
+          <Button variant="secondary" size="lg">Register & Pay</Button>
         </Link>
       </div>
     </div>

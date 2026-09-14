@@ -34,6 +34,23 @@ pnpm dev
 - `docs/DATA_MODEL.md` — Firestore collections and fields
 - `docs/SETUP.md` — environment variables, Firebase bootstrap, deploy steps
 
+## Admin panel (`apps/admin`)
+Beyond Courses, Enrollments and Notifications, the admin panel now manages
+all the content the public site used to hardcode:
+- **Gallery** — add/edit/delete photos, set category (drives the filter
+  pills on `/gallery`)
+- **Testimonials** — add/edit/delete, publish/unpublish toggle, display order
+- **Team** — resource-person profiles shown on the homepage and About page
+- **FAQs** — the homepage FAQ accordion
+- **Subscribers** / **Enquiries** — read-only views of newsletter sign-ups
+  and contact-form submissions, which were previously being collected with
+  no way to see them
+
+The public site (`apps/web`) reads all four content types from Firestore
+via `apps/web/lib/content.ts`, falling back to a small placeholder set if
+a collection is still empty — so the site never renders a blank section
+before an admin has added real content.
+
 ## Notes / next steps
 - Sample content for the three currently-announced courses (EIA workshop,
   GHG Accounting & Carbon Credits master class, Green Tech & IP workshop)

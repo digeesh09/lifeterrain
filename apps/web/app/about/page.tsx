@@ -1,5 +1,8 @@
 import { AboutSplit, TeamSection, StatsBand, CTABanner, SectionHeading, Reveal, StaggerGroup, StaggerItem } from "@lifeterrain/ui";
 import { Leaf, GraduationCap, Building2, Globe2, Sprout } from "lucide-react";
+import { getTeamMembers } from "@/lib/content";
+
+export const revalidate = 60;
 
 const FOCUS_AREAS = [
   { icon: Leaf, title: "Research & Scientific Development", desc: "Promoting interdisciplinary studies, research collaborations, and innovative solutions across life sciences, environmental studies, ecology, wildlife and biodiversity." },
@@ -9,22 +12,9 @@ const FOCUS_AREAS = [
   { icon: Globe2, title: "Knowledge Exchange & Collaboration", desc: "Creating platforms for interaction among researchers, academic institutions, industries, professionals and experts." },
 ];
 
-const TEAM = [
-  {
-    name: "Dr. Anoop V.",
-    role: "Environmental Researcher, Trainer & Founder",
-    bio: "Founder of LifeTerrain Research and Training; leads course design and delivery across GHG accounting, carbon markets and environmental impact assessment.",
-    photoUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=70",
-  },
-  {
-    name: "Somnath Banerjee",
-    role: "Environmental Policy Expert, Researcher & Consultant",
-    bio: "Brings policy and regulatory depth to our carbon markets and sustainability programmes.",
-    photoUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=70",
-  },
-];
+export default async function AboutPage() {
+  const team = await getTeamMembers();
 
-export default function AboutPage() {
   return (
     <>
       <div className="bg-forest-700 py-16 text-center text-white">
@@ -76,7 +66,7 @@ export default function AboutPage() {
       </section>
 
       <Reveal>
-        <TeamSection members={TEAM} />
+        <TeamSection members={team} />
       </Reveal>
       <Reveal>
         <CTABanner />

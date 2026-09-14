@@ -5,6 +5,14 @@ import { db, admin } from "../admin";
 import { sendEnrollmentConfirmation } from "../notifications/sendEmail";
 import { sendWhatsAppMessage } from "../notifications/sendWhatsApp";
 
+type Enrollment = {
+  name: string;
+  email: string;
+  phone: string;
+  courseTitle: string;
+  amount: number;
+};
+
 const corsHandler = cors({ origin: true });
 
 /**
@@ -36,7 +44,7 @@ export const verifyPayment = functions.https.onRequest((req, res) => {
         confirmedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
-      const enrollment = (await enrollmentRef.get()).data()!;
+      const enrollment = (await enrollmentRef.get()).data() as Enrollment;
       await sendEnrollmentConfirmation(enrollment).catch((e) => console.error("email failed", e));
       await sendWhatsAppMessage(
         enrollment.phone,

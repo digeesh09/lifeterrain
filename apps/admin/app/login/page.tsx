@@ -1,11 +1,12 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import type { ChangeEvent } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Button, Card, FormField, Input } from "@lifeterrain/ui";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function AdminLoginPage() {
+function AdminLoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const [email, setEmail] = useState("");
@@ -32,11 +33,19 @@ export default function AdminLoginPage() {
         <h1 className="text-center font-display text-xl font-extrabold text-forest-700">Admin Login</h1>
         {error && <p className="mt-3 rounded-lg bg-red-50 p-2 text-sm text-red-600">{error}</p>}
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
-          <FormField label="Email" required><Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></FormField>
-          <FormField label="Password" required><Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} /></FormField>
+          <FormField label="Email" required><Input type="email" required value={email} onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)} /></FormField>
+          <FormField label="Password" required><Input type="password" required value={password} onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} /></FormField>
           <Button type="submit" loading={loading}>Login</Button>
         </form>
       </Card>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminLoginForm />
+    </Suspense>
   );
 }

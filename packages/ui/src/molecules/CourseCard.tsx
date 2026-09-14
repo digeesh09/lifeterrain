@@ -1,6 +1,5 @@
-"use client";
-
 import { Badge } from "../atoms/Badge";
+import { Button } from "../atoms/Button";
 import { Card } from "../atoms/Card";
 import { CalendarDays, Clock, Laptop } from "lucide-react";
 
@@ -22,7 +21,7 @@ export interface CourseSummary {
 export function CourseCard({ course, onView }: { course: CourseSummary; onView?: (slug: string) => void }) {
   const statusTone = { upcoming: "gold", open: "leaf", closed: "neutral", completed: "neutral" } as const;
   return (
-    <Card className="flex flex-col overflow-hidden">
+    <Card hoverLift className="group flex flex-col overflow-hidden">
       <div className="bg-forest-700 px-5 py-4">
         <Badge tone={statusTone[course.status]}>{course.status}</Badge>
         <h3 className="mt-2 font-display text-lg font-bold leading-snug text-white">{course.title}</h3>
@@ -53,9 +52,9 @@ export function CourseCard({ course, onView }: { course: CourseSummary; onView?:
               <span className="ml-2 text-xs text-ink-500 line-through">₹{course.earlyBirdFee}</span>
             )}
           </div>
-          <a href={`/courses/${course.slug}`} className="inline-flex items-center justify-center gap-2 rounded-full bg-forest-700 px-3 py-1.5 text-sm font-display font-semibold text-white transition-colors hover:bg-forest-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-forest-500">
+          <Button size="sm" onClick={() => onView?.(course.slug)}>
             View & Enroll
-          </a>
+          </Button>
         </div>
       </div>
     </Card>

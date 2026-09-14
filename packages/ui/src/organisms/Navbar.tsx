@@ -56,9 +56,9 @@ export function Navbar({
               </Button>
             </>
           ) : (
-            <a href="/login" className="inline-flex items-center justify-center gap-2 rounded-full bg-forest-700 px-3 py-1.5 text-sm font-display font-semibold text-white transition-colors hover:bg-forest-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-forest-500">
+            <Button size="sm" onClick={() => (window.location.href = "/login")}>
               Login / Register
-            </a>
+            </Button>
           )}
         </div>
 
@@ -74,9 +74,9 @@ export function Navbar({
               {l.label}
             </a>
           ))}
-          <a href={isAuthed ? "/dashboard" : "/login"} className="inline-flex items-center justify-center gap-2 rounded-full bg-forest-700 px-3 py-1.5 text-sm font-display font-semibold text-white transition-colors hover:bg-forest-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-forest-500">
+          <Button size="sm" onClick={() => (window.location.href = isAuthed ? "/dashboard" : "/login")}>
             {isAuthed ? "My Dashboard" : "Login / Register"}
-          </a>
+          </Button>
         </div>
       )}
     </header>

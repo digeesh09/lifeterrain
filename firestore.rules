@@ -38,6 +38,26 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // Public site content — anyone can read (public site renders these),
+    // only admins can write (managed from the admin panel's Gallery,
+    // Testimonials, Team and FAQs pages).
+    match /galleryPhotos/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /testimonials/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /teamMembers/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /faqs/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Admin-only collections for internal notes, broadcast logs, etc.
     match /adminMeta/{docId} {
       allow read, write: if isAdmin();

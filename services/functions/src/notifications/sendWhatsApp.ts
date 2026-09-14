@@ -1,5 +1,4 @@
 import * as functions from "firebase-functions";
-import fetch from "node-fetch";
 
 /**
  * Sends a WhatsApp message via the Meta WhatsApp Cloud API.

@@ -15,6 +15,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <a href="/courses" className="rounded-lg px-3 py-2 hover:bg-white/10">Courses</a>
               <a href="/enrollments" className="rounded-lg px-3 py-2 hover:bg-white/10">Enrollments</a>
               <a href="/notifications" className="rounded-lg px-3 py-2 hover:bg-white/10">Notifications</a>
+              <p className="mt-4 px-3 text-xs font-bold uppercase tracking-wide text-cream/40">Site Content</p>
+              <a href="/gallery" className="rounded-lg px-3 py-2 hover:bg-white/10">Gallery</a>
+              <a href="/testimonials" className="rounded-lg px-3 py-2 hover:bg-white/10">Testimonials</a>
+              <a href="/team" className="rounded-lg px-3 py-2 hover:bg-white/10">Team</a>
+              <a href="/faqs" className="rounded-lg px-3 py-2 hover:bg-white/10">FAQs</a>
+              <p className="mt-4 px-3 text-xs font-bold uppercase tracking-wide text-cream/40">Leads</p>
+              <a href="/subscribers" className="rounded-lg px-3 py-2 hover:bg-white/10">Subscribers</a>
+              <a href="/enquiries" className="rounded-lg px-3 py-2 hover:bg-white/10">Enquiries</a>
             </nav>
           </aside>
           <main className="flex-1 p-6 md:p-10">{children}</main>
