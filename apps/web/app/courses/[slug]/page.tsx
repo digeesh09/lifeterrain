@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { CalendarDays, Clock, Laptop, Users } from "lucide-react";
+import { BrochureViewer } from "./BrochureViewer";
 
 export const revalidate = 60;
 
@@ -12,32 +13,44 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
   if (!course) return notFound();
 
   return (
-    <>
-      <div className="relative h-56 w-full overflow-hidden md:h-72">
-        <Image
-          src={course.coverImageUrl || "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1600&q=70"}
-          alt={course.title}
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-forest-900/50" />
-      </div>
-    <div className="mx-auto max-w-4xl px-4 py-12 md:px-6">
-      <Reveal>
-        <Badge tone="leaf">{course.status}</Badge>
-        <h1 className="mt-3 font-display text-3xl font-extrabold text-forest-700 md:text-4xl">{course.title}</h1>
-        <p className="mt-4 text-ink-700">{course.description}</p>
-
-        <div className="mt-6 grid gap-4 rounded-xl2 bg-white p-6 shadow-card sm:grid-cols-2">
-          <span className="flex items-center gap-2 text-sm"><CalendarDays className="h-4 w-4 text-leaf-500" /> {course.startDate}{course.endDate ? ` – ${course.endDate}` : ""}</span>
-          {course.time && <span className="flex items-center gap-2 text-sm"><Clock className="h-4 w-4 text-leaf-500" /> {course.time}</span>}
-          {course.mode && <span className="flex items-center gap-2 text-sm"><Laptop className="h-4 w-4 text-leaf-500" /> {course.mode}</span>}
-          {course.seatsLeft !== undefined && <span className="flex items-center gap-2 text-sm"><Users className="h-4 w-4 text-leaf-500" /> {course.seatsLeft} seats left</span>}
+    <div className="mx-auto max-w-6xl px-4 py-12 md:px-6">
+      <div className="grid gap-12 md:grid-cols-[1fr_2fr]">
+        
+        {/* Brochure / Cover Image */}
+        <div>
+          <Reveal>
+            <div className="w-full overflow-hidden rounded-xl shadow-card bg-forest-900/5">
+              {course.coverImageUrl?.toLowerCase().includes('.pdf') ? (
+                <iframe src={course.coverImageUrl} className="w-full h-[600px] border-0" title={course.title} />
+              ) : (
+                <BrochureViewer 
+                  src={course.coverImageUrl || "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=70"}
+                  alt={course.title}
+                />
+              )}
+            </div>
+          </Reveal>
         </div>
-      </Reveal>
 
-      {course.curriculum?.length > 0 && (
+        {/* Details */}
+        <div>
+          <Reveal>
+            <Badge tone="leaf">{course.status}</Badge>
+            <h1 className="mt-3 font-display text-3xl font-extrabold text-forest-700 md:text-4xl">{course.title}</h1>
+            <div 
+              className="mt-4 prose prose-ink max-w-none text-ink-700 prose-p:leading-relaxed prose-a:text-forest-600 hover:prose-a:text-forest-700" 
+              dangerouslySetInnerHTML={{ __html: course.description || "" }} 
+            />
+
+            <div className="mt-6 grid gap-4 rounded-xl2 bg-white p-6 shadow-card sm:grid-cols-2">
+              <span className="flex items-center gap-2 text-sm"><CalendarDays className="h-4 w-4 text-leaf-500" /> {course.startDate}{course.endDate ? ` – ${course.endDate}` : ""}</span>
+              {course.time && <span className="flex items-center gap-2 text-sm"><Clock className="h-4 w-4 text-leaf-500" /> {course.time}</span>}
+              {course.mode && <span className="flex items-center gap-2 text-sm"><Laptop className="h-4 w-4 text-leaf-500" /> {course.mode}</span>}
+              {course.seatsLeft !== undefined && <span className="flex items-center gap-2 text-sm"><Users className="h-4 w-4 text-leaf-500" /> {course.seatsLeft} seats left</span>}
+            </div>
+          </Reveal>
+
+          {course.curriculum?.length > 0 && (
         <Reveal className="mt-10">
           <h2 className="font-display text-2xl font-bold text-forest-700">Course Structure</h2>
           <p className="mt-1 text-sm text-ink-500">Click through each day to see what's covered.</p>
@@ -71,7 +84,8 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
           <Button variant="secondary" size="lg">Register & Pay</Button>
         </Link>
       </div>
+        </div>
+      </div>
     </div>
-    </>
   );
 }

@@ -1,6 +1,7 @@
 const preset = require("../../packages/ui/tailwind-preset");
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  plugins: [require("@tailwindcss/typography")],
   presets: [preset],
   content: [
     "./app/**/*.{ts,tsx}",

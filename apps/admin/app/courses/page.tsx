@@ -5,6 +5,7 @@ import { useAdminGuard } from "@/lib/useAdminGuard";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
 import { Badge, Button, Card, FormField, Input, Spinner } from "@lifeterrain/ui";
+import { RichTextEditor } from "./RichTextEditor";
 
 interface CourseRow {
   id: string;
@@ -14,6 +15,7 @@ interface CourseRow {
   endDate?: string;
   fee: number;
   status: string;
+  coverImageUrl?: string;
 }
 
 const emptyForm = { title: "", slug: "", startDate: "", endDate: "", time: "", mode: "Online | Live Interactive", fee: 0, earlyBirdFee: 0, description: "", status: "upcoming", coverImageUrl: "" };
@@ -49,12 +51,60 @@ export default function AdminCoursesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
-    return onSnapshot(collection(db, "courses"), (snap) => {
-      setCourses(snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })));
-    });
+    return onSnapshot(
+      collection(db, "courses"), 
+      (snap) => {
+        setCourses(snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })));
+      },
+      (error) => {
+        console.error("Firestore error:", error);
+        alert(`Error loading courses: ${error.message}`);
+      }
+    );
   }, []);
+
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    setUploadProgress(10); // Show some progress
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      setUploadProgress(90);
+
+      const data = await res.json();
+      if (data.success) {
+        // Next.js uses absolute paths, no domain needed for same-domain
+        // However, if web is on 3000 and admin on 3001, we want the public url
+        // to be relative so it works on both, but wait, the web app needs the relative URL
+        // If they are deployed on the same domain or VPS, a relative url works.
+        // If admin is separated, we need to return the URL relative to the public dir.
+        // We'll just use the returned relative URL "/uploads/..." 
+        setForm((prev: any) => ({ ...prev, coverImageUrl: data.url }));
+      } else {
+        throw new Error(data.error || "Unknown error");
+      }
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      alert(`Upload failed: ${error.message}`);
+    } finally {
+      setUploadProgress(100);
+      setUploadingImage(false);
+    }
+  };
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -71,6 +121,9 @@ export default function AdminCoursesPage() {
       setForm(emptyForm);
       setEditingId(null);
       setIsFormOpen(false);
+    } catch (error: any) {
+      console.error("Save error:", error);
+      alert(`Failed to save: ${error.message}`);
     } finally {
       setSaving(false);
     }
@@ -111,12 +164,29 @@ export default function AdminCoursesPage() {
         )}
         {courses.map((c) => (
           <Card key={c.id} className="flex items-center justify-between gap-4 p-4">
-            <div className="min-w-0">
-              <p className="truncate font-display font-bold text-ink-900">{c.title}</p>
-              <p className="text-sm text-ink-500">{c.startDate} · ₹{c.fee}</p>
+            <div className="flex items-center gap-4 min-w-0">
+              {c.coverImageUrl ? (
+                c.coverImageUrl.toLowerCase().includes('.pdf') ? (
+                  <div className="h-12 w-20 bg-ink-100 rounded-md flex flex-col items-center justify-center text-[10px] text-ink-600 font-medium">
+                    <span className="text-red-500 font-bold mb-0.5">PDF</span>
+                    Brochure
+                  </div>
+                ) : (
+                  <img src={c.coverImageUrl} alt={c.title} className="h-12 w-20 object-cover rounded-md" />
+                )
+              ) : (
+                <div className="h-12 w-20 bg-ink-100 rounded-md flex items-center justify-center text-[10px] text-ink-400">No Image</div>
+              )}
+              <div>
+                <p className="truncate font-display font-bold text-ink-900">{c.title}</p>
+                <p className="text-sm text-ink-500">{c.startDate} · ₹{c.fee}</p>
+              </div>
             </div>
             <div className="flex shrink-0 items-center gap-3">
               <Badge tone={c.status === "open" ? "leaf" : "gold"}>{c.status}</Badge>
+              <a href={`http://localhost:3000/courses/${c.slug}`} target="_blank" rel="noreferrer">
+                <Button size="sm" variant="ghost">View Details</Button>
+              </a>
               <Button size="sm" variant="outline" onClick={() => edit(c)}>Edit</Button>
               <Button size="sm" variant="ghost" onClick={() => remove(c.id)}>Delete</Button>
             </div>
@@ -157,17 +227,23 @@ export default function AdminCoursesPage() {
             </select>
           </FormField>
           <div className="sm:col-span-2">
-            <FormField label="Cover Image URL" hint="Shown on the course detail page banner (e.g. an Unsplash or your own hosted image link)">
-              <Input value={form.coverImageUrl} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, coverImageUrl: e.target.value })} placeholder="https://..." />
+            <FormField label="Cover Image" hint="Upload an image or provide a URL (Shown on the course detail page banner)">
+              <div className="flex flex-col gap-2">
+                <Input value={form.coverImageUrl || ""} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, coverImageUrl: e.target.value })} placeholder="https://..." />
+                <div className="flex items-center gap-2">
+                  <Input type="file" accept="image/*,application/pdf" onChange={handleImageUpload} disabled={uploadingImage} />
+                  {uploadingImage && <span className="text-sm text-ink-500">Uploading... {Math.round(uploadProgress)}%</span>}
+                </div>
+              </div>
             </FormField>
           </div>
           <div className="sm:col-span-2">
             <FormField label="Description">
-              <textarea className="min-h-24 rounded-lg border border-ink-500/20 px-4 py-2.5" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+              <RichTextEditor value={form.description || ""} onChange={(val: string) => setForm({ ...form, description: val })} />
             </FormField>
           </div>
           <div className="flex gap-3 sm:col-span-2">
-            <Button type="submit" loading={saving}>{editingId ? "Save Changes" : "Create Course"}</Button>
+            <Button type="submit" loading={saving} disabled={uploadingImage}>{editingId ? "Save Changes" : "Create Course"}</Button>
             <Button type="button" variant="outline" onClick={() => { setForm(emptyForm); setEditingId(null); setIsFormOpen(false); }}>Cancel</Button>
           </div>
             </form>

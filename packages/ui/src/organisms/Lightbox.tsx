@@ -4,7 +4,7 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
-export interface GalleryImage { url: string; alt: string; category: string; }
+export interface GalleryImage { url: string; alt: string; category: string; description?: string; type?: "image" | "video"; }
 
 /** A filterable photo grid with a click-to-expand lightbox (arrow-key + click navigation). */
 export function Lightbox({ images, categories }: { images: GalleryImage[]; categories: string[] }) {
@@ -47,13 +47,17 @@ export function Lightbox({ images, categories }: { images: GalleryImage[]; categ
             onClick={() => setOpenIndex(i)}
             className="group relative block w-full overflow-hidden rounded-xl2 shadow-card"
           >
-            <Image
-              src={img.url}
-              alt={img.alt}
-              width={600}
-              height={400}
-              className="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
+            {img.type === "video" ? (
+              <video src={img.url} className="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105" muted playsInline />
+            ) : (
+              <Image
+                src={img.url}
+                alt={img.alt}
+                width={600}
+                height={400}
+                className="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            )}
             <div className="absolute inset-0 flex items-end bg-gradient-to-t from-forest-900/60 via-transparent to-transparent p-3 opacity-0 transition-opacity group-hover:opacity-100">
               <span className="text-xs font-semibold text-white">{img.alt}</span>
             </div>
@@ -85,17 +89,27 @@ export function Lightbox({ images, categories }: { images: GalleryImage[]; categ
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.25 }}
-              className="relative max-h-[80vh] w-full max-w-3xl"
+              className="relative max-h-[80vh] w-full max-w-3xl flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              <Image
-                src={filtered[openIndex].url}
-                alt={filtered[openIndex].alt}
-                width={1200}
-                height={800}
-                className="h-auto max-h-[75vh] w-full rounded-xl2 object-contain"
-              />
-              <p className="mt-3 text-center text-sm text-white/80">{filtered[openIndex].alt}</p>
+              {filtered[openIndex].type === "video" ? (
+                <video src={filtered[openIndex].url} controls autoPlay className="h-auto max-h-[65vh] w-full rounded-xl2 object-contain" />
+              ) : (
+                <Image
+                  src={filtered[openIndex].url}
+                  alt={filtered[openIndex].alt}
+                  width={1200}
+                  height={800}
+                  className="h-auto max-h-[65vh] w-full rounded-xl2 object-contain"
+                />
+              )}
+              <p className="mt-3 text-center text-lg font-semibold text-white">{filtered[openIndex].alt}</p>
+              {filtered[openIndex].description && (
+                <div 
+                  className="mt-2 text-center text-sm text-white/80 prose prose-invert mx-auto prose-p:my-1 prose-a:text-leaf-400 max-h-[15vh] overflow-y-auto"
+                  dangerouslySetInnerHTML={{ __html: filtered[openIndex].description! }}
+                />
+              )}
             </motion.div>
             <button
               className="absolute right-4 text-white/70 hover:text-white"

@@ -7,6 +7,7 @@ export interface CourseSummary {
   slug: string;
   title: string;
   tagline?: string;
+  coverImageUrl?: string;
   startDate: string; // human formatted e.g. "30 Nov 2026"
   endDate?: string;
   time?: string; // "7:30 - 8:30 PM IST"
@@ -22,10 +23,21 @@ export function CourseCard({ course, onView }: { course: CourseSummary; onView?:
   const statusTone = { upcoming: "gold", open: "leaf", closed: "neutral", completed: "neutral" } as const;
   return (
     <Card hoverLift className="group flex flex-col overflow-hidden">
-      <div className="bg-forest-700 px-5 py-4">
-        <Badge tone={statusTone[course.status]}>{course.status}</Badge>
-        <h3 className="mt-2 font-display text-lg font-bold leading-snug text-white">{course.title}</h3>
-      </div>
+      {course.coverImageUrl && !course.coverImageUrl.toLowerCase().includes('.pdf') ? (
+        <div className="h-56 w-full overflow-hidden relative flex flex-col justify-end bg-forest-900/5">
+          <img src={course.coverImageUrl} alt={course.title} className="absolute inset-0 w-full h-full object-contain object-top" />
+          <div className="absolute inset-0 bg-gradient-to-t from-forest-900/90 via-forest-900/20 to-transparent" />
+          <div className="relative p-4 mt-auto">
+            <Badge tone={statusTone[course.status]} className="mb-2">{course.status}</Badge>
+            <h3 className="font-display text-lg font-bold leading-snug text-white">{course.title}</h3>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-forest-700 px-5 py-4">
+          <Badge tone={statusTone[course.status]}>{course.status}</Badge>
+          <h3 className="mt-2 font-display text-lg font-bold leading-snug text-white">{course.title}</h3>
+        </div>
+      )}
       <div className="flex flex-1 flex-col gap-3 px-5 py-4">
         {course.tagline && <p className="text-sm text-ink-500">{course.tagline}</p>}
         <div className="flex flex-col gap-1.5 text-sm text-ink-700">
