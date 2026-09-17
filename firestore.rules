@@ -2,45 +2,38 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // -------------------------------------------------------------------------
+    // UTILITY FUNCTIONS (OWASP Access Control & Validation)
+    // -------------------------------------------------------------------------
     function isSignedIn() {
       return request.auth != null;
     }
     function isAdmin() {
       return isSignedIn() && request.auth.token.admin == true;
     }
+    // Ensures a string is valid and within length bounds
+    function isValidString(text, min, max) {
+      return text is string && text.size() >= min && text.size() <= max;
+    }
+    // Ensures a string does not contain HTML tags (anti-XSS payload)
+    function isPlainText(text) {
+      return !text.matches('.*<.*');
+    }
+    // Ensures field exists and matches type
+    function hasOnlyKeys(allowedFields) {
+      return request.resource.data.keys().hasOnly(allowedFields);
+    }
+    function hasAllKeys(requiredFields) {
+      return request.resource.data.keys().hasAll(requiredFields);
+    }
 
-    // Anyone can read course listings; only admins can write.
+    // -------------------------------------------------------------------------
+    // PUBLIC READ / ADMIN WRITE COLLECTIONS
+    // -------------------------------------------------------------------------
     match /courses/{courseId} {
       allow read: if true;
       allow write: if isAdmin();
     }
-
-    // Enrollments: a signed-in user may create their own pending
-    // enrollment and read their own records. Only Cloud Functions
-    // (admin SDK, bypasses rules) may set status to "confirmed" — the
-    // rule below explicitly blocks clients from writing `status`.
-    match /enrollments/{enrollmentId} {
-      allow create: if request.resource.data.status == "pending_payment";
-      allow read: if isAdmin() || (isSignedIn() && resource.data.email == request.auth.token.email);
-      allow update: if false; // only Cloud Functions (Admin SDK) may update
-      allow delete: if isAdmin();
-    }
-
-    // Public contact-form submissions — anyone can create, only admins read.
-    match /enquiries/{enquiryId} {
-      allow create: if true;
-      allow read, update, delete: if isAdmin();
-    }
-
-    // Newsletter sign-ups — anyone can create, only admins read.
-    match /newsletterSubscribers/{id} {
-      allow create: if true;
-      allow read, update, delete: if isAdmin();
-    }
-
-    // Public site content — anyone can read (public site renders these),
-    // only admins can write (managed from the admin panel's Gallery,
-    // Testimonials, Team and FAQs pages).
     match /galleryPhotos/{id} {
       allow read: if true;
       allow write: if isAdmin();
@@ -57,10 +50,68 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
-
-    // Admin-only collections for internal notes, broadcast logs, etc.
     match /adminMeta/{docId} {
       allow read, write: if isAdmin();
     }
+
+    // -------------------------------------------------------------------------
+    // CLIENT WRITABLE COLLECTIONS (OWASP INJECTION PREVENTION)
+    // -------------------------------------------------------------------------
+    
+    // USERS: Only users can write their own profiles.
+    match /users/{userId} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      // Validate schema on write
+      allow create, update: if isAdmin() || (
+        isSignedIn() && 
+        request.auth.uid == userId &&
+        (request.resource.data.name == null || (isValidString(request.resource.data.name, 1, 100) && isPlainText(request.resource.data.name))) &&
+        (request.resource.data.email == null || (isValidString(request.resource.data.email, 5, 150) && isPlainText(request.resource.data.email))) &&
+        (request.resource.data.phone == null || (isValidString(request.resource.data.phone, 0, 20) && isPlainText(request.resource.data.phone))) &&
+        (request.resource.data.institution == null || (isValidString(request.resource.data.institution, 0, 150) && isPlainText(request.resource.data.institution)))
+      );
+      allow delete: if isAdmin();
+    }
+
+    // ENROLLMENTS: Users can create pending enrollments for themselves.
+    match /enrollments/{enrollmentId} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.email == request.auth.token.email);
+      // OWASP Schema Enforcement
+      allow create: if isSignedIn() &&
+        request.resource.data.status == "pending_payment" &&
+        hasAllKeys(['courseId', 'courseTitle', 'fee', 'name', 'email', 'phone', 'status', 'createdAt']) &&
+        isValidString(request.resource.data.courseId, 1, 100) &&
+        isValidString(request.resource.data.courseTitle, 1, 200) &&
+        request.resource.data.fee is number && request.resource.data.fee >= 0 &&
+        isValidString(request.resource.data.name, 1, 100) && isPlainText(request.resource.data.name) &&
+        isValidString(request.resource.data.email, 5, 150) && isPlainText(request.resource.data.email) &&
+        isValidString(request.resource.data.phone, 1, 20) && isPlainText(request.resource.data.phone) &&
+        request.resource.data.email == request.auth.token.email;
+      allow update: if false; // Only Cloud Functions (Admin SDK) can update to confirmed
+      allow delete: if isAdmin();
+    }
+
+    // ENQUIRIES: Unauthenticated public contact form.
+    match /enquiries/{enquiryId} {
+      allow read, update, delete: if isAdmin();
+      // OWASP Schema & Size Limits to prevent Injection/DoS
+      allow create: if 
+        hasAllKeys(['name', 'email', 'message', 'createdAt']) &&
+        isValidString(request.resource.data.name, 1, 100) && isPlainText(request.resource.data.name) &&
+        isValidString(request.resource.data.email, 5, 150) && isPlainText(request.resource.data.email) &&
+        isValidString(request.resource.data.message, 1, 2000) && isPlainText(request.resource.data.message) &&
+        request.resource.data.createdAt is timestamp;
+    }
+
+    // NEWSLETTER: Unauthenticated public newsletter form.
+    match /newsletterSubscribers/{id} {
+      allow read, update, delete: if isAdmin();
+      // OWASP Schema & Size Limits
+      allow create: if 
+        hasAllKeys(['email', 'createdAt']) &&
+        isValidString(request.resource.data.email, 5, 150) &&
+        request.resource.data.createdAt is timestamp;
+    }
+
   }
 }

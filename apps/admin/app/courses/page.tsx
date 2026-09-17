@@ -18,7 +18,7 @@ interface CourseRow {
   coverImageUrl?: string;
 }
 
-const emptyForm = { title: "", slug: "", startDate: "", endDate: "", time: "", mode: "Online | Live Interactive", fee: 0, earlyBirdFee: 0, description: "", status: "upcoming", coverImageUrl: "" };
+const emptyForm = { title: "", slug: "", tagline: "", startDate: "", endDate: "", time: "", mode: "Online | Live Interactive", fee: 0, earlyBirdFee: 0, description: "", status: "upcoming", coverImageUrl: "" };
 
 function toDateInputValue(value: unknown): string {
   if (!value) return "";
@@ -212,6 +212,9 @@ export default function AdminCoursesPage() {
             <form onSubmit={handleSave} className="mt-4 grid gap-4 sm:grid-cols-2">
           <FormField label="Title" required><Input required value={form.title} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, title: e.target.value })} /></FormField>
           <FormField label="Slug (URL, optional)"><Input value={form.slug} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, slug: e.target.value })} placeholder="auto-generated if empty" /></FormField>
+          <div className="sm:col-span-2">
+            <FormField label="Tagline (Short Summary)"><Input value={form.tagline || ""} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, tagline: e.target.value })} placeholder="e.g. Build practical skills for credible environmental assessment" /></FormField>
+          </div>
           <FormField label="Start Date" required><Input type="date" required value={form.startDate} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, startDate: e.target.value })} /></FormField>
           <FormField label="End Date"><Input type="date" value={form.endDate} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, endDate: e.target.value })} /></FormField>
           <FormField label="Time"><Input value={form.time} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, time: e.target.value })} placeholder="7:30 - 8:30 PM IST" /></FormField>

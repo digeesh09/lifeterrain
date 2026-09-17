@@ -28,7 +28,7 @@ export default function AdminEnquiriesPage() {
               <p className="font-semibold text-ink-900">{r.name} <span className="font-normal text-ink-500">· {r.email}</span></p>
               <span className="text-xs text-ink-500">{r.createdAt?.toDate?.().toLocaleString?.() ?? ""}</span>
             </div>
-            <p className="mt-2 text-sm text-ink-700">{r.message}</p>
+            <p className="mt-2 text-sm text-ink-700 whitespace-pre-wrap">{r.message}</p>
           </Card>
         ))}
         {rows.length === 0 && <p className="text-ink-500">No enquiries yet.</p>}

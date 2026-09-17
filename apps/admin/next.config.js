@@ -1,2 +1,2 @@
 /** @type {import('next').NextConfig} */
-module.exports = { transpilePackages: ["@lifeterrain/ui"] };
+module.exports = { output: "standalone", transpilePackages: ["@lifeterrain/ui"] };

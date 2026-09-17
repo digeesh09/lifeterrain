@@ -6,15 +6,28 @@ import { Mail } from "lucide-react";
 export function NewsletterBand({ onSubscribe }: { onSubscribe?: (email: string) => Promise<void> | void }) {
   const [email, setEmail] = useState("");
   const [done, setDone] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError("");
+
+    if (/<.*>/.test(email)) {
+      setError("Invalid email format (HTML tags are not allowed).");
+      return;
+    }
+
     setLoading(true);
     try {
       await onSubscribe?.(email);
       setDone(true);
       setEmail("");
+    } catch (err: any) {
+      if (err.message?.includes("permission-denied") || err.code === "permission-denied") {
+        setError("Rejected by security policies.");
+      } else {
+        setError("Failed to subscribe.");
+      }
     } finally {
       setLoading(false);
     }
@@ -33,17 +46,20 @@ export function NewsletterBand({ onSubscribe }: { onSubscribe?: (email: string) 
         {done ? (
           <p className="font-semibold text-leaf-700">Thanks — you're subscribed!</p>
         ) : (
-          <form onSubmit={handleSubmit} className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
-            <input
-              required
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 rounded-full border border-forest-700/20 bg-white px-5 py-3 text-sm focus:border-forest-500 focus:outline-none focus:ring-2 focus:ring-forest-500/30"
-            />
-            <Button type="submit" loading={loading} className="shrink-0">Subscribe</Button>
-          </form>
+          <div className="flex w-full max-w-md flex-col items-center gap-2">
+            <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3 sm:flex-row">
+              <input
+                required
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="flex-1 rounded-full border border-forest-700/20 bg-white px-5 py-3 text-sm focus:border-forest-500 focus:outline-none focus:ring-2 focus:ring-forest-500/30"
+              />
+              <Button type="submit" loading={loading} className="shrink-0">Subscribe</Button>
+            </form>
+            {error && <p className="text-sm text-red-600 font-medium mt-1">{error}</p>}
+          </div>
         )}
       </div>
     </section>

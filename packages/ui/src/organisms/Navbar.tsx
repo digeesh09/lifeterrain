@@ -24,9 +24,8 @@ export function Navbar({
     <header className="sticky top-0 z-40 bg-cream/90 backdrop-blur border-b border-forest-700/10">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
         <a href={brandHref} className="flex items-center gap-2 font-display font-extrabold text-forest-700">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-forest-700 text-white">
-            <Leaf className="h-5 w-5" />
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.jpeg" alt="LifeTerrain Logo" className="h-10 w-auto object-contain" />
           <span className="leading-tight">
             LifeTerrain
             <span className="block text-[10px] font-semibold uppercase tracking-widest text-leaf-500">

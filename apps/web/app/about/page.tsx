@@ -1,4 +1,4 @@
-import { AboutSplit, TeamSection, StatsBand, CTABanner, SectionHeading, Reveal, StaggerGroup, StaggerItem } from "@lifeterrain/ui";
+import { AboutSplit, TeamSection, StatsBand, CTABanner, SectionHeading, Reveal, StaggerGroup, StaggerItem, WaveDivider } from "@lifeterrain/ui";
 import { Leaf, GraduationCap, Building2, Globe2, Sprout } from "lucide-react";
 import { getTeamMembers } from "@/lib/content";
 
@@ -65,9 +65,13 @@ export default async function AboutPage() {
         </StaggerGroup>
       </section>
 
-      <Reveal>
-        <TeamSection members={team} />
-      </Reveal>
+      <div className="bg-sage-50">
+        <WaveDivider fill="#ffffff" flip />
+        <Reveal>
+          <TeamSection members={team} />
+        </Reveal>
+        <WaveDivider fill="#ffffff" />
+      </div>
       <Reveal>
         <CTABanner />
       </Reveal>

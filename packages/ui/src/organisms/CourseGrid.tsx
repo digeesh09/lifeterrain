@@ -15,7 +15,7 @@ export function CourseGrid({ courses, onView }: { courses: CourseSummary[]; onVi
       ) : (
         <StaggerGroup className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {courses.map((c) => (
-            <StaggerItem key={c.slug}>
+            <StaggerItem key={c.slug} className="h-full">
               <CourseCard course={c} onView={onView} />
             </StaggerItem>
           ))}

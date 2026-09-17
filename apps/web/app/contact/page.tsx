@@ -10,13 +10,29 @@ export default function ContactPage() {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
 
+  const [error, setError] = useState("");
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError("");
+
+    // Client-side anti-XSS validation
+    if (/<.*>/.test(form.name) || /<.*>/.test(form.email) || /<.*>/.test(form.message)) {
+      setError("Your message contains invalid characters (HTML tags are not allowed).");
+      return;
+    }
+
     setSending(true);
     try {
       await addDoc(collection(db, "enquiries"), { ...form, createdAt: serverTimestamp() });
       setSent(true);
       setForm({ name: "", email: "", message: "" });
+    } catch (err: any) {
+      if (err.code === "permission-denied") {
+        setError("Message rejected by security policies. Please ensure it does not contain code, links, or exceed length limits.");
+      } else {
+        setError("Failed to send message. Please try again later.");
+      }
     } finally {
       setSending(false);
     }
@@ -31,6 +47,7 @@ export default function ContactPage() {
             <p className="text-forest-700">Thanks — your message has been sent. We'll get back to you shortly.</p>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              {error && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</p>}
               <FormField label="Name" required><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></FormField>
               <FormField label="Email" required><Input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></FormField>
               <FormField label="Message" required>

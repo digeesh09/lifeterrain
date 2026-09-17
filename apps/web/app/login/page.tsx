@@ -7,14 +7,22 @@ import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  updateProfile,
 } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
 
 export default function LoginPage() {
   const router = useRouter();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  
+  // Extra fields for signup
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [institution, setInstitution] = useState("");
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -23,8 +31,20 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     try {
-      if (mode === "signin") await signInWithEmailAndPassword(auth, email, password);
-      else await createUserWithEmailAndPassword(auth, email, password);
+      if (mode === "signin") {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(cred.user, { displayName: name });
+        // Save additional user info to firestore
+        await setDoc(doc(db, "users", cred.user.uid), {
+          name,
+          email,
+          phone,
+          institution,
+          createdAt: serverTimestamp(),
+        });
+      }
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message);
@@ -35,7 +55,14 @@ export default function LoginPage() {
 
   async function handleGoogle() {
     try {
-      await signInWithPopup(auth, new GoogleAuthProvider());
+      const cred = await signInWithPopup(auth, new GoogleAuthProvider());
+      // On first sign in, we should save them to users collection if they don't exist
+      // Since setDoc with merge: true won't overwrite existing createdAt, it's safe to do this
+      await setDoc(doc(db, "users", cred.user.uid), {
+        name: cred.user.displayName,
+        email: cred.user.email,
+        lastLogin: serverTimestamp(),
+      }, { merge: true });
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message);
@@ -50,18 +77,41 @@ export default function LoginPage() {
         </h1>
         {error && <p className="mt-3 rounded-lg bg-red-50 p-2 text-sm text-red-600">{error}</p>}
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
+          {mode === "signup" && (
+            <>
+              <FormField label="Full Name" required>
+                <Input required value={name} onChange={(e) => setName(e.target.value)} />
+              </FormField>
+              <FormField label="Phone Number" required>
+                <Input required type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              </FormField>
+              <FormField label="Institution / Organization" required>
+                <Input required value={institution} onChange={(e) => setInstitution(e.target.value)} />
+              </FormField>
+            </>
+          )}
           <FormField label="Email" required>
             <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </FormField>
           <FormField label="Password" required>
             <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
           </FormField>
-          <Button type="submit" loading={loading}>{mode === "signin" ? "Login" : "Sign Up"}</Button>
+          <Button type="submit" loading={loading}>{mode === "signin" ? "Login" : "Create Account"}</Button>
         </form>
-        <Button variant="outline" className="mt-3 w-full" onClick={handleGoogle}>Continue with Google</Button>
+        
+        <div className="my-4 flex items-center gap-3">
+          <hr className="flex-1 border-forest-700/10" />
+          <span className="text-xs uppercase tracking-widest text-ink-500">Or</span>
+          <hr className="flex-1 border-forest-700/10" />
+        </div>
+
+        <Button variant="outline" className="w-full" onClick={handleGoogle}>Continue with Google</Button>
         <p className="mt-4 text-center text-sm text-ink-500">
           {mode === "signin" ? "New here?" : "Already registered?"}{" "}
-          <button className="font-semibold text-forest-700" onClick={() => setMode(mode === "signin" ? "signup" : "signin")}>
+          <button className="font-semibold text-forest-700" onClick={() => {
+            setMode(mode === "signin" ? "signup" : "signin");
+            setError("");
+          }}>
             {mode === "signin" ? "Create an account" : "Login instead"}
           </button>
         </p>

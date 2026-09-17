@@ -22,7 +22,7 @@ export interface CourseSummary {
 export function CourseCard({ course, onView }: { course: CourseSummary; onView?: (slug: string) => void }) {
   const statusTone = { upcoming: "gold", open: "leaf", closed: "neutral", completed: "neutral" } as const;
   return (
-    <Card hoverLift className="group flex flex-col overflow-hidden">
+    <Card hoverLift className="group flex h-full flex-col overflow-hidden">
       {course.coverImageUrl && !course.coverImageUrl.toLowerCase().includes('.pdf') ? (
         <div className="h-56 w-full overflow-hidden relative flex flex-col justify-end bg-forest-900/5">
           <img src={course.coverImageUrl} alt={course.title} className="absolute inset-0 w-full h-full object-contain object-top" />

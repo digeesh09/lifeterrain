@@ -51,15 +51,22 @@ export default async function HomePage() {
       <Reveal>
         <WhyChooseUs />
       </Reveal>
+      
+      <div className="bg-sage-50">
+        <WaveDivider fill="#ffffff" />
+      </div>
 
-      <WaveDivider fill="#ffffff" />
       <Reveal>
         <CourseGridClient courses={courses} />
       </Reveal>
 
-      <Reveal>
-        <TeamSection members={team} />
-      </Reveal>
+      <div className="bg-sage-50">
+        <WaveDivider fill="#ffffff" flip />
+        <Reveal>
+          <TeamSection members={team} />
+        </Reveal>
+        <WaveDivider fill="#ffffff" />
+      </div>
 
       <Reveal>
         <section className="mx-auto max-w-6xl px-4 py-16 md:px-6">
