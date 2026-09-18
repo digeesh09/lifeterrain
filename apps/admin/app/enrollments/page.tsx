@@ -24,10 +24,10 @@ export default function AdminEnrollmentsPage() {
   if (loading) return <Spinner />;
 
   const filtered = filter === "all" ? rows : rows.filter((r) => r.status === filter);
-  const statusTone: Record<string, "leaf" | "gold" | "neutral" | "ocean"> = { 
+  const statusTone: Record<string, "leaf" | "gold" | "neutral" | "forest"> = { 
     confirmed: "leaf", 
     pending_payment: "gold", 
-    pending_verification: "ocean",
+    pending_verification: "forest",
     cancelled: "neutral" 
   };
 

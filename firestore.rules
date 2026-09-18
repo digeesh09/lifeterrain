@@ -89,7 +89,14 @@ service cloud.firestore {
         isValidString(request.resource.data.email, 5, 150) && isPlainText(request.resource.data.email) &&
         isValidString(request.resource.data.phone, 1, 20) && isPlainText(request.resource.data.phone) &&
         request.resource.data.email == request.auth.token.email;
-      allow update: if false; // Only Server can update
+      allow update: if isAdmin() || (
+        isSignedIn() &&
+        resource.data.email == request.auth.token.email &&
+        resource.data.status == "pending_payment" &&
+        request.resource.data.status == "pending_verification" &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status", "utrNumber", "updatedAt"]) &&
+        request.resource.data.utrNumber is string
+      );
       allow delete: if isAdmin();
     }
 

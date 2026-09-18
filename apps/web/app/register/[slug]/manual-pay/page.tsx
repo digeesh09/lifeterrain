@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, Button, FormField, Input } from "@lifeterrain/ui";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export default function ManualPayPage() {
@@ -26,15 +26,15 @@ export default function ManualPayPage() {
     if (!enrollmentId) return;
     setSubmitting(true);
     try {
-      const res = await fetch("/api/manual-pay", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ enrollmentId, utrNumber }),
+      await updateDoc(doc(db, "enrollments", enrollmentId), {
+        status: "pending_verification",
+        utrNumber,
+        updatedAt: serverTimestamp(),
       });
-      if (!res.ok) throw new Error("Submission failed");
       router.push("/dashboard?status=pending_verification");
     } catch (err: any) {
-      setError("Failed to submit transaction details.");
+      console.error(err);
+      setError("Failed to submit transaction details. " + err.message);
     } finally {
       setSubmitting(false);
     }

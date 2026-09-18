@@ -125,6 +125,8 @@ export default function AdminCoursesPage() {
         earlyBirdFee: form.earlyBirdFee || null,
         status: form.status,
         coverImageUrl: form.coverImageUrl,
+        meetingLink: form.meetingLink || "",
+        meetingInfo: form.meetingInfo || "",
         curriculum: form.curriculum || [],
         resourcePersons: form.resourcePersons || [],
         startDateISO: form.startDate ? new Date(form.startDate).toISOString() : new Date().toISOString(),
@@ -249,7 +251,30 @@ export default function AdminCoursesPage() {
               <option value="completed">Completed</option>
             </select>
           </FormField>
-          <div className="sm:col-span-2">
+          
+          <div className="sm:col-span-2 mt-4 border-t border-ink-500/10 pt-4">
+            <h3 className="text-sm font-bold text-forest-700 mb-4">Post-Enrollment Details (For Confirmed Students)</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="sm:col-span-2">
+                <FormField label="Meeting Link / Joining URL" hint="This will only be shown to students who have paid and are confirmed.">
+                  <Input value={form.meetingLink || ""} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, meetingLink: e.target.value })} placeholder="https://meet.google.com/... or Zoom link" />
+                </FormField>
+              </div>
+              <div className="sm:col-span-2">
+                <FormField label="Meeting Instructions / Password" hint="Optional meeting password or additional instructions.">
+                  <textarea 
+                    className="w-full rounded-md border border-ink-500/20 p-3 text-sm font-sans resize-y" 
+                    rows={2}
+                    value={form.meetingInfo || ""} 
+                    onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setForm({ ...form, meetingInfo: e.target.value })} 
+                    placeholder="e.g. Passcode: 123456. Please join 5 mins early."
+                  />
+                </FormField>
+              </div>
+            </div>
+          </div>
+
+          <div className="sm:col-span-2 border-t border-ink-500/10 pt-4">
             <FormField label="Cover Image" hint="Upload an image or provide a URL (Shown on the course detail page banner)">
               <div className="flex flex-col gap-2">
                 <Input value={form.coverImageUrl || ""} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, coverImageUrl: e.target.value })} placeholder="https://..." />
