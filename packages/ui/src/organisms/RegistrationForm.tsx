@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { Input } from "../atoms/Input";
 import { Button } from "../atoms/Button";
 import { FormField } from "../molecules/FormField";
@@ -23,19 +23,27 @@ export function RegistrationForm({
   feeLabel,
   submitting,
   onSubmit,
+  initialValues,
 }: {
   feeLabel: string;
   submitting?: boolean;
   onSubmit: (values: RegistrationValues) => void;
+  initialValues?: Partial<RegistrationValues>;
 }) {
   const [values, setValues] = useState<RegistrationValues>({
-    name: "",
-    email: "",
-    phone: "",
-    qualification: "",
-    organisation: "",
-    hearAbout: "",
+    name: initialValues?.name || "",
+    email: initialValues?.email || "",
+    phone: initialValues?.phone || "",
+    qualification: initialValues?.qualification || "",
+    organisation: initialValues?.organisation || "",
+    hearAbout: initialValues?.hearAbout || "",
   });
+
+  useEffect(() => {
+    if (initialValues) {
+      setValues((v) => ({ ...v, ...initialValues }));
+    }
+  }, [initialValues]);
 
   const update = (k: keyof RegistrationValues) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setValues((v) => ({ ...v, [k]: e.target.value }));

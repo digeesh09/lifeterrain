@@ -7,6 +7,7 @@ export function NewsletterBand({ onSubscribe }: { onSubscribe?: (email: string) 
   const [email, setEmail] = useState("");
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

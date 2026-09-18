@@ -4,8 +4,8 @@ import { useParams, useRouter } from "next/navigation";
 import { RegistrationForm, RegistrationValues, Spinner } from "@lifeterrain/ui";
 import { getCourseBySlug, CourseDoc } from "@/lib/courses";
 import { payForEnrollment } from "@/lib/razorpay";
-import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db, auth } from "@/lib/firebase";
 
 export default function RegisterPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -13,12 +13,29 @@ export default function RegisterPage() {
   const [course, setCourse] = useState<CourseDoc | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paymentSettings, setPaymentSettings] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
     getCourseBySlug(slug).then(setCourse);
+    
+    import("firebase/firestore").then(({ doc, getDoc }) => {
+      getDoc(doc(db, "settings", "payment")).then(snap => {
+        setPaymentSettings(snap.exists() ? snap.data() : { mode: "razorpay" });
+      });
+      
+      import("firebase/auth").then(({ onAuthStateChanged }) => {
+        onAuthStateChanged(auth, async (user) => {
+          if (user) {
+            const userSnap = await getDoc(doc(db, "users", user.uid));
+            if (userSnap.exists()) setUserProfile(userSnap.data());
+          }
+        });
+      });
+    });
   }, [slug]);
 
-  if (!course) return <div className="flex justify-center py-24"><Spinner /></div>;
+  if (!course || !paymentSettings) return <div className="flex justify-center py-24"><Spinner /></div>;
 
   const activeFee =
     course.earlyBirdFee && course.earlyBirdDeadline && new Date() <= new Date(course.earlyBirdDeadline)
@@ -40,23 +57,22 @@ export default function RegisterPage() {
         createdAt: serverTimestamp(),
       });
 
-      // 2. Launch Razorpay checkout for that enrollment.
-      await payForEnrollment({
-        enrollmentId: enrollmentRef.id,
-        amountInPaise: activeFee * 100,
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-        onSuccess: async (paymentId) => {
-          await updateDoc(doc(db, "enrollments", enrollmentRef.id), {
-            status: "confirmed",
-            paymentId,
-            confirmedAt: serverTimestamp(),
-          });
-          router.push(`/dashboard?enrolled=${course!.slug}`);
-        },
-        onFailure: (reason) => setError(reason),
-      });
+      // 2. Launch Razorpay or redirect to manual payment
+      if (paymentSettings?.mode === "manual") {
+        router.push(`/register/${course!.slug}/manual-pay?id=${enrollmentRef.id}`);
+      } else {
+        await payForEnrollment({
+          enrollmentId: enrollmentRef.id,
+          name: values.name,
+          email: values.email,
+          phone: values.phone,
+          onSuccess: async (paymentId) => {
+            // The verification API route already marks the enrollment as "confirmed" securely.
+            router.push(`/dashboard?enrolled=${course!.slug}`);
+          },
+          onFailure: (reason) => setError(reason),
+        });
+      }
     } catch (e: any) {
       setError(e.message ?? "Something went wrong");
     } finally {
@@ -68,7 +84,17 @@ export default function RegisterPage() {
     <div className="mx-auto max-w-2xl px-4 py-12 md:px-6">
       <h1 className="mb-2 font-display text-2xl font-extrabold text-forest-700">{course.title}</h1>
       {error && <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</p>}
-      <RegistrationForm feeLabel={`₹${activeFee}`} submitting={submitting} onSubmit={handleSubmit} />
+      <RegistrationForm
+        feeLabel={`₹${activeFee}`}
+        submitting={submitting}
+        onSubmit={handleSubmit}
+        initialValues={{
+          name: userProfile?.name || "",
+          email: userProfile?.email || "",
+          phone: userProfile?.phone || "",
+          organisation: userProfile?.institution || "",
+        }}
+      />
     </div>
   );
 }

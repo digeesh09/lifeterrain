@@ -4,6 +4,11 @@ import { getTeamMembers } from "@/lib/content";
 
 export const revalidate = 60;
 
+export const metadata = {
+  title: "About Us | LifeTerrain",
+  description: "Learn about LifeTerrain's mission to promote interdisciplinary studies, capacity building, and innovative environmental solutions.",
+};
+
 const FOCUS_AREAS = [
   { icon: Leaf, title: "Research & Scientific Development", desc: "Promoting interdisciplinary studies, research collaborations, and innovative solutions across life sciences, environmental studies, ecology, wildlife and biodiversity." },
   { icon: GraduationCap, title: "Training & Capacity Building", desc: "Specialised training programmes, professional courses, workshops, seminars and expert-led sessions to strengthen scientific and technical competence." },

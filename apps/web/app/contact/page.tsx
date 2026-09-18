@@ -2,8 +2,6 @@
 import { useState } from "react";
 import { Button, Card, FormField, Input, SectionHeading } from "@lifeterrain/ui";
 import { Mail, Phone, MapPin } from "lucide-react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -24,15 +22,20 @@ export default function ContactPage() {
 
     setSending(true);
     try {
-      await addDoc(collection(db, "enquiries"), { ...form, createdAt: serverTimestamp() });
+      const res = await fetch("/api/enquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      
+      if (!res.ok) {
+        throw new Error("Failed to send message.");
+      }
+      
       setSent(true);
       setForm({ name: "", email: "", message: "" });
     } catch (err: any) {
-      if (err.code === "permission-denied") {
-        setError("Message rejected by security policies. Please ensure it does not contain code, links, or exceed length limits.");
-      } else {
-        setError("Failed to send message. Please try again later.");
-      }
+      setError("Failed to send message. Please try again later.");
     } finally {
       setSending(false);
     }

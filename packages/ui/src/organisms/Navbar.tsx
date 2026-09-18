@@ -15,7 +15,7 @@ export function Navbar({
   brandHref = "/",
 }: {
   links: NavLink[];
-  isAuthed?: boolean;
+  isAuthed?: boolean | null;
   onLogout?: () => void;
   brandHref?: string;
 }) {
@@ -45,7 +45,7 @@ export function Navbar({
               <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-leaf-500 transition-all duration-300 group-hover:w-full" />
             </a>
           ))}
-          {isAuthed ? (
+          {isAuthed === true ? (
             <>
               <a href="/dashboard" className="text-sm font-semibold text-ink-700 hover:text-forest-700">
                 My Dashboard
@@ -54,10 +54,12 @@ export function Navbar({
                 Logout
               </Button>
             </>
-          ) : (
+          ) : isAuthed === false ? (
             <Button size="sm" onClick={() => (window.location.href = "/login")}>
               Login / Register
             </Button>
+          ) : (
+            <div className="w-24 h-8 animate-pulse rounded bg-ink-200/50" />
           )}
         </div>
 
@@ -73,9 +75,15 @@ export function Navbar({
               {l.label}
             </a>
           ))}
-          <Button size="sm" onClick={() => (window.location.href = isAuthed ? "/dashboard" : "/login")}>
-            {isAuthed ? "My Dashboard" : "Login / Register"}
-          </Button>
+          {isAuthed === true ? (
+            <Button size="sm" onClick={() => (window.location.href = "/dashboard")}>
+              My Dashboard
+            </Button>
+          ) : isAuthed === false ? (
+            <Button size="sm" onClick={() => (window.location.href = "/login")}>
+              Login / Register
+            </Button>
+          ) : null}
         </div>
       )}
     </header>

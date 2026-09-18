@@ -7,6 +7,16 @@ import { subscribeToNewsletter } from "./actions";
 
 export const revalidate = 60;
 
+export const metadata = {
+  title: "LifeTerrain | Bridging Scientific Research and Practice",
+  description: "LifeTerrain provides high-quality environmental science, research training, and practical skills for credible environmental assessment.",
+  openGraph: {
+    title: "LifeTerrain | Bridging Scientific Research and Practice",
+    description: "LifeTerrain provides high-quality environmental science, research training, and practical skills for credible environmental assessment.",
+    type: "website",
+  }
+};
+
 const STATS = [
   { value: 3, label: "Live Programmes Launched" },
   { value: 10, label: "Days of Practical Training" },

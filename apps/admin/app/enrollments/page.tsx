@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import { useAdminGuard } from "@/lib/useAdminGuard";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { Badge, Card, Spinner } from "@lifeterrain/ui";
+import { collection, onSnapshot, orderBy, query, updateDoc, doc } from "firebase/firestore";
+import { Badge, Button, Card, Spinner } from "@lifeterrain/ui";
 
 export default function AdminEnrollmentsPage() {
   const { loading } = useAdminGuard();
@@ -15,10 +15,21 @@ export default function AdminEnrollmentsPage() {
     return onSnapshot(q, (snap) => setRows(snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }))));
   }, []);
 
+  async function verifyPayment(id: string) {
+    if (confirm("Mark this payment as confirmed?")) {
+      await updateDoc(doc(db, "enrollments", id), { status: "confirmed", updatedAt: new Date() });
+    }
+  }
+
   if (loading) return <Spinner />;
 
   const filtered = filter === "all" ? rows : rows.filter((r) => r.status === filter);
-  const statusTone: Record<string, "leaf" | "gold" | "neutral"> = { confirmed: "leaf", pending_payment: "gold", cancelled: "neutral" };
+  const statusTone: Record<string, "leaf" | "gold" | "neutral" | "ocean"> = { 
+    confirmed: "leaf", 
+    pending_payment: "gold", 
+    pending_verification: "ocean",
+    cancelled: "neutral" 
+  };
 
   return (
     <div>
@@ -28,6 +39,7 @@ export default function AdminEnrollmentsPage() {
           <option value="all">All</option>
           <option value="confirmed">Confirmed</option>
           <option value="pending_payment">Pending Payment</option>
+          <option value="pending_verification">Pending Verification (Manual)</option>
           <option value="cancelled">Cancelled</option>
         </select>
       </div>
@@ -36,21 +48,38 @@ export default function AdminEnrollmentsPage() {
         <table className="w-full text-left text-sm">
           <thead className="bg-forest-700 text-white">
             <tr>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Course</th>
-              <th className="px-4 py-3">Contact</th>
-              <th className="px-4 py-3">Amount</th>
-              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Student Details</th>
+              <th className="px-4 py-3">Course & Org</th>
+              <th className="px-4 py-3">Payment</th>
+              <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((r) => (
               <tr key={r.id} className="border-t border-forest-700/10">
-                <td className="px-4 py-3 font-semibold">{r.name}</td>
-                <td className="px-4 py-3">{r.courseTitle}</td>
-                <td className="px-4 py-3 text-ink-500">{r.email}<br />{r.phone}</td>
-                <td className="px-4 py-3">₹{r.amount}</td>
-                <td className="px-4 py-3"><Badge tone={statusTone[r.status] ?? "neutral"}>{r.status}</Badge></td>
+                <td className="px-4 py-3 align-top">
+                  <p className="font-semibold text-ink-900">{r.name}</p>
+                  <p className="text-xs text-ink-500">{r.email}</p>
+                  <p className="text-xs text-ink-500">{r.phone}</p>
+                </td>
+                <td className="px-4 py-3 align-top">
+                  <p className="font-semibold text-ink-900 line-clamp-1" title={r.courseTitle}>{r.courseTitle}</p>
+                  <p className="text-xs text-ink-500">{r.organisation || "No org"} • {r.qualification || "No qual"}</p>
+                </td>
+                <td className="px-4 py-3 align-top">
+                  <p className="font-semibold text-ink-900">₹{r.amount}</p>
+                  <div className="mt-1">
+                    <Badge tone={statusTone[r.status] ?? "neutral"}>
+                      {r.status === "pending_verification" ? "Verify UTR" : r.status}
+                    </Badge>
+                  </div>
+                  {r.utrNumber && <p className="text-xs text-ink-500 mt-1 font-mono">UTR: {r.utrNumber}</p>}
+                </td>
+                <td className="px-4 py-3 align-top text-right">
+                  {r.status === "pending_verification" && (
+                    <Button size="sm" onClick={() => verifyPayment(r.id)}>Confirm</Button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

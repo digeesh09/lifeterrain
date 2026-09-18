@@ -5,6 +5,8 @@ import { useAdminGuard } from "@/lib/useAdminGuard";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
 import { Badge, Button, Card, FormField, Input, Spinner } from "@lifeterrain/ui";
+import { CurriculumEditor } from "../../components/CurriculumEditor";
+import { ResourcePersonsEditor } from "../../components/ResourcePersonsEditor";
 import { RichTextEditor } from "./RichTextEditor";
 
 interface CourseRow {
@@ -110,9 +112,25 @@ export default function AdminCoursesPage() {
     e.preventDefault();
     setSaving(true);
     try {
-      const slug = form.slug || form.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-      const startDateISO = form.startDate ? new Date(form.startDate).toISOString() : new Date().toISOString();
-      const payload = { ...form, slug, startDateISO, updatedAt: serverTimestamp() };
+      const payload = {
+        title: form.title,
+        slug: form.slug || form.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+        tagline: form.tagline,
+        description: form.description,
+        startDate: form.startDate,
+        endDate: form.endDate || null,
+        time: form.time || null,
+        mode: form.mode || "Online",
+        fee: form.fee,
+        earlyBirdFee: form.earlyBirdFee || null,
+        status: form.status,
+        coverImageUrl: form.coverImageUrl,
+        curriculum: form.curriculum || [],
+        resourcePersons: form.resourcePersons || [],
+        startDateISO: form.startDate ? new Date(form.startDate).toISOString() : new Date().toISOString(),
+        updatedAt: serverTimestamp(),
+      };
+
       if (editingId) {
         await updateDoc(doc(db, "courses", editingId), payload);
       } else {
@@ -133,6 +151,8 @@ export default function AdminCoursesPage() {
     setForm({
       ...emptyForm,
       ...c,
+      curriculum: c.curriculum || [],
+      resourcePersons: c.resourcePersons || [],
       startDate: toDateInputValue(c.startDate || c.startDateISO),
       endDate: toDateInputValue(c.endDate),
     });
@@ -244,6 +264,20 @@ export default function AdminCoursesPage() {
             <FormField label="Description">
               <RichTextEditor value={form.description || ""} onChange={(val: string) => setForm({ ...form, description: val })} />
             </FormField>
+          </div>
+          <div className="sm:col-span-2">
+            <h3 className="text-sm font-semibold text-ink-700 mb-2">Curriculum (Course Structure)</h3>
+            <CurriculumEditor 
+              value={form.curriculum || []} 
+              onChange={(val: any) => setForm({ ...form, curriculum: val })} 
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <h3 className="text-sm font-semibold text-ink-700 mb-2">Resource Persons</h3>
+            <ResourcePersonsEditor 
+              value={form.resourcePersons || []} 
+              onChange={(val: any) => setForm({ ...form, resourcePersons: val })} 
+            />
           </div>
           <div className="flex gap-3 sm:col-span-2">
             <Button type="submit" loading={saving} disabled={uploadingImage}>{editingId ? "Save Changes" : "Create Course"}</Button>

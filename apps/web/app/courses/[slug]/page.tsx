@@ -8,6 +8,31 @@ import { BrochureViewer } from "./BrochureViewer";
 
 export const revalidate = 60;
 
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const course = await getCourseBySlug(params.slug);
+  if (!course) return { title: "Course Not Found" };
+
+  const plainDescription = course.description?.replace(/<[^>]+>/g, '').substring(0, 160) || "Join LifeTerrain Research & Training.";
+  const title = `${course.title} | LifeTerrain`;
+
+  return {
+    title,
+    description: plainDescription,
+    openGraph: {
+      title,
+      description: plainDescription,
+      images: course.coverImageUrl ? [course.coverImageUrl] : [],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: plainDescription,
+      images: course.coverImageUrl ? [course.coverImageUrl] : [],
+    },
+  };
+}
+
 export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
   const course = await getCourseBySlug(params.slug);
   if (!course) return notFound();

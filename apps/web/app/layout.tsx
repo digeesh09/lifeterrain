@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Navbar, Footer } from "@lifeterrain/ui";
+import { Footer } from "@lifeterrain/ui";
+import { SiteNavbar } from "@/components/SiteNavbar";
 
 export const metadata: Metadata = {
   title: "LifeTerrain Research & Training",
@@ -19,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="font-body text-ink-900 antialiased">
-        <Navbar links={NAV_LINKS} />
+        <SiteNavbar links={NAV_LINKS} />
         <main>{children}</main>
         <Footer />
       </body>

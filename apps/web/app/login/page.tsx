@@ -23,6 +23,8 @@ export default function LoginPage() {
   const [phone, setPhone] = useState("");
   const [institution, setInstitution] = useState("");
 
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -30,6 +32,20 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    if (mode === "signup") {
+      if (password.length < 6) {
+        setError("Password must be at least 6 characters long.");
+        setLoading(false);
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError("Passwords do not match.");
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       if (mode === "signin") {
         await signInWithEmailAndPassword(auth, email, password);
@@ -96,6 +112,11 @@ export default function LoginPage() {
           <FormField label="Password" required>
             <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
           </FormField>
+          {mode === "signup" && (
+            <FormField label="Confirm Password" required>
+              <Input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+            </FormField>
+          )}
           <Button type="submit" loading={loading}>{mode === "signin" ? "Login" : "Create Account"}</Button>
         </form>
         

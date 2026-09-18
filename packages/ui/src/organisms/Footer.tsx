@@ -3,7 +3,7 @@ import { Leaf, Mail, Phone, MapPin } from "lucide-react";
 export function Footer() {
   return (
     <footer className="bg-forest-900 text-cream">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-3 md:px-6">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-4 md:px-6">
         <div>
           <div className="flex items-center gap-2 font-display text-lg font-extrabold">
             <Leaf className="h-5 w-5 text-leaf-500" /> LifeTerrain Research &amp; Training
@@ -20,7 +20,15 @@ export function Footer() {
             <li><a href="/gallery" className="hover:text-white">Gallery</a></li>
             <li><a href="/about" className="hover:text-white">About Us</a></li>
             <li><a href="/dashboard" className="hover:text-white">My Enrollments</a></li>
-            <li><a href="/contact" className="hover:text-white">Contact</a></li>
+          </ul>
+        </div>
+        <div className="text-sm text-cream/80">
+          <h4 className="mb-3 font-display font-bold text-leaf-500">Legal & Policies</h4>
+          <ul className="space-y-2">
+            <li><a href="/privacy-policy" className="hover:text-white">Privacy Policy</a></li>
+            <li><a href="/terms" className="hover:text-white">Terms &amp; Conditions</a></li>
+            <li><a href="/refund" className="hover:text-white">Refund Policy</a></li>
+            <li><a href="/contact" className="hover:text-white">Contact Us</a></li>
           </ul>
         </div>
         <div className="text-sm text-cream/80">
