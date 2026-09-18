@@ -103,12 +103,12 @@ service cloud.firestore {
     // ENQUIRIES: Unauthenticated public contact form.
     match /enquiries/{enquiryId} {
       allow read, update, delete: if isAdmin();
-      // OWASP Schema & Size Limits to prevent Injection/DoS
       allow create: if 
-        hasAllKeys(['name', 'email', 'message', 'createdAt']) &&
+        request.resource.data.keys().hasAll(['name', 'email', 'message', 'createdAt']) &&
         isValidString(request.resource.data.name, 1, 100) && isPlainText(request.resource.data.name) &&
         isValidString(request.resource.data.email, 5, 150) && isPlainText(request.resource.data.email) &&
         isValidString(request.resource.data.message, 1, 2000) && isPlainText(request.resource.data.message) &&
+        (request.resource.data.phone == null || (isValidString(request.resource.data.phone, 0, 20) && isPlainText(request.resource.data.phone))) &&
         request.resource.data.createdAt is timestamp;
     }
 

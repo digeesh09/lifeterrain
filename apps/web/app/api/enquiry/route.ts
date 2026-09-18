@@ -4,25 +4,13 @@ import nodemailer from "nodemailer";
 
 export async function POST(req: Request) {
   try {
-    const { name, email, message } = await req.json();
+    const { name, email, phone, message } = await req.json();
 
     if (!name || !email || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    if (!adminDb) {
-      return NextResponse.json({ error: "Database not initialized" }, { status: 500 });
-    }
-
-    // Save to Firestore
-    await adminDb.collection("enquiries").add({
-      name,
-      email,
-      message,
-      createdAt: new Date(),
-    });
-
-    // Send Email via Nodemailer
+    // Send Email via Nodemailer (Database save is already handled securely by Client SDK)
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || "smtp.gmail.com",
       port: Number(process.env.SMTP_PORT) || 465,
@@ -37,7 +25,7 @@ export async function POST(req: Request) {
       from: `"LifeTerrain" <${process.env.SMTP_USER}>`,
       to: "anoopecothoughts@gmail.com",
       subject: `New Enquiry from ${name}`,
-      text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+      text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\n\nMessage:\n${message}`,
     });
 
     return NextResponse.json({ success: true });

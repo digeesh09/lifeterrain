@@ -25,7 +25,13 @@ export default function AdminEnquiriesPage() {
         {rows.map((r) => (
           <Card key={r.id} className="p-5">
             <div className="flex items-center justify-between">
-              <p className="font-semibold text-ink-900">{r.name} <span className="font-normal text-ink-500">· {r.email}</span></p>
+              <p className="font-semibold text-ink-900">
+                {r.name} 
+                <span className="font-normal text-ink-500">
+                  {" "}· {r.email}
+                  {r.phone && ` · ${r.phone}`}
+                </span>
+              </p>
               <span className="text-xs text-ink-500">{r.createdAt?.toDate?.().toLocaleString?.() ?? ""}</span>
             </div>
             <p className="mt-2 text-sm text-ink-700 whitespace-pre-wrap">{r.message}</p>
