@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Footer } from "@lifeterrain/ui";
 import { SiteNavbar } from "@/components/SiteNavbar";
+import NextTopLoader from 'nextjs-toploader';
+import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata: Metadata = {
   title: "LifeTerrain Research & Training",
@@ -20,9 +21,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="font-body text-ink-900 antialiased">
+        <NextTopLoader color="#034e35" showSpinner={false} />
         <SiteNavbar links={NAV_LINKS} />
         <main>{children}</main>
-        <Footer />
+        <SiteFooter />
       </body>
     </html>
   );

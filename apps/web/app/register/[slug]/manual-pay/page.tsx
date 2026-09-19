@@ -45,25 +45,36 @@ export default function ManualPayPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 md:px-6">
       <Card className="p-8">
-        <h1 className="font-display text-2xl font-bold text-forest-700">Manual Payment</h1>
-        <p className="mt-2 text-ink-600">Please transfer the course fee to the following account and provide the UTR/Reference number below.</p>
+        <h1 className="font-display text-2xl font-bold text-forest-700">Complete Your Enrollment</h1>
+        <p className="mt-2 text-ink-600">
+          Almost there! To gain access to the course, please complete the payment using the details below.
+        </p>
         
-        <div className="mt-6 rounded-lg bg-sage-50 p-6">
-          {settings.upiId && <p><strong>UPI ID:</strong> {settings.upiId}</p>}
-          {settings.bankDetails && <p className="mt-2 whitespace-pre-wrap"><strong>Bank Details:</strong><br/>{settings.bankDetails}</p>}
+        <div className="mt-6 rounded-lg bg-sage-50 p-6 border border-sage-100">
+          <h3 className="font-display font-semibold text-forest-700 mb-3">Step 1: Transfer the Course Fee</h3>
+          {settings.upiId && <p className="mb-2"><strong>UPI ID:</strong> {settings.upiId}</p>}
+          {settings.bankDetails && <p className="whitespace-pre-wrap mb-4"><strong>Bank Details:</strong><br/>{settings.bankDetails}</p>}
           {settings.qrCodeUrl && (
-            <div className="mt-4">
-              <img src={settings.qrCodeUrl} alt="UPI QR Code" className="h-48 w-48 rounded-lg border border-forest-700/10" />
+            <div className="mt-2">
+              <p className="text-sm text-ink-500 mb-2">Or scan to pay via any UPI app:</p>
+              <img src={settings.qrCodeUrl} alt="UPI QR Code" className="h-48 w-48 rounded-xl border border-forest-700/10 shadow-sm" />
             </div>
           )}
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          <div>
+            <h3 className="font-display font-semibold text-forest-700 mb-1">Step 2: Submit Reference Number</h3>
+            <p className="text-sm text-ink-500 mb-4">After paying, enter the 12-digit UTR or Transaction Reference number so we can verify it.</p>
+          </div>
+
+          {error && <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">{error}</p>}
           <FormField label="Transaction UTR / Reference Number" required>
-            <Input required value={utrNumber} onChange={(e) => setUtrNumber(e.target.value)} />
+            <Input required placeholder="e.g. 312345678901" value={utrNumber} onChange={(e) => setUtrNumber(e.target.value)} />
           </FormField>
-          <Button type="submit" loading={submitting}>Submit Payment for Verification</Button>
+          
+          <Button type="submit" loading={submitting} className="mt-2">Submit & Complete Purchase</Button>
+          <p className="text-center text-xs text-ink-400 mt-2">Our team will verify the payment and confirm your enrollment shortly.</p>
         </form>
       </Card>
     </div>

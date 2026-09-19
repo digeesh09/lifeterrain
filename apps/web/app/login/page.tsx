@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card, FormField, Input } from "@lifeterrain/ui";
 import {
@@ -27,6 +27,15 @@ export default function LoginPage() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [authConfig, setAuthConfig] = useState<any>({ allowGoogleSignIn: true, allowRegistration: true });
+
+  useEffect(() => {
+    import("firebase/firestore").then(({ getDoc, doc }) => {
+      getDoc(doc(db, "settings", "auth")).then((snap) => {
+        if (snap.exists()) setAuthConfig(snap.data());
+      });
+    });
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -34,6 +43,11 @@ export default function LoginPage() {
     setError("");
 
     if (mode === "signup") {
+      if (!authConfig.allowRegistration) {
+        setError("New user registrations are currently disabled.");
+        setLoading(false);
+        return;
+      }
       if (password.length < 6) {
         setError("Password must be at least 6 characters long.");
         setLoading(false);
@@ -120,22 +134,28 @@ export default function LoginPage() {
           <Button type="submit" loading={loading}>{mode === "signin" ? "Login" : "Create Account"}</Button>
         </form>
         
-        <div className="my-4 flex items-center gap-3">
-          <hr className="flex-1 border-forest-700/10" />
-          <span className="text-xs uppercase tracking-widest text-ink-500">Or</span>
-          <hr className="flex-1 border-forest-700/10" />
-        </div>
+        {authConfig.allowGoogleSignIn && (
+          <>
+            <div className="my-4 flex items-center gap-3">
+              <hr className="flex-1 border-forest-700/10" />
+              <span className="text-xs uppercase tracking-widest text-ink-500">Or</span>
+              <hr className="flex-1 border-forest-700/10" />
+            </div>
+            <Button variant="outline" className="w-full" onClick={handleGoogle}>Continue with Google</Button>
+          </>
+        )}
 
-        <Button variant="outline" className="w-full" onClick={handleGoogle}>Continue with Google</Button>
-        <p className="mt-4 text-center text-sm text-ink-500">
-          {mode === "signin" ? "New here?" : "Already registered?"}{" "}
-          <button className="font-semibold text-forest-700" onClick={() => {
-            setMode(mode === "signin" ? "signup" : "signin");
-            setError("");
-          }}>
-            {mode === "signin" ? "Create an account" : "Login instead"}
-          </button>
-        </p>
+        {authConfig.allowRegistration && (
+          <p className="mt-4 text-center text-sm text-ink-500">
+            {mode === "signin" ? "New here?" : "Already registered?"}{" "}
+            <button className="font-semibold text-forest-700" onClick={() => {
+              setMode(mode === "signin" ? "signup" : "signin");
+              setError("");
+            }}>
+              {mode === "signin" ? "Create an account" : "Login instead"}
+            </button>
+          </p>
+        )}
       </Card>
     </div>
   );

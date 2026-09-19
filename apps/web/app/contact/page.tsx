@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Card, FormField, Input, SectionHeading } from "@lifeterrain/ui";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -10,6 +10,21 @@ export default function ContactPage() {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+  
+  const [contactInfo, setContactInfo] = useState<any>(null);
+
+  useEffect(() => {
+    import("firebase/firestore").then(({ getDoc, doc }) => {
+      getDoc(doc(db, "settings", "contact")).then((snap) => {
+        if (snap.exists()) {
+          setContactInfo(snap.data());
+        } else {
+          // Fallback if no settings exist in DB
+          setContactInfo({ email: "anoopecothoughts@gmail.com", phone: "+91 87147 29406", address: "India" });
+        }
+      });
+    });
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -70,9 +85,19 @@ export default function ContactPage() {
           )}
         </Card>
         <div className="flex flex-col gap-4">
-          <Card className="flex items-center gap-4 p-5"><Mail className="h-5 w-5 text-leaf-500" /> anoopecothoughts@gmail.com</Card>
-          <Card className="flex items-center gap-4 p-5"><Phone className="h-5 w-5 text-leaf-500" /> +91 87147 29406</Card>
-          <Card className="flex items-center gap-4 p-5"><MapPin className="h-5 w-5 text-leaf-500" /> India</Card>
+          {!contactInfo ? (
+            <>
+              <Card className="flex items-center gap-4 p-5 h-[68px] animate-pulse bg-forest-900/5"></Card>
+              <Card className="flex items-center gap-4 p-5 h-[68px] animate-pulse bg-forest-900/5"></Card>
+              <Card className="flex items-center gap-4 p-5 h-[68px] animate-pulse bg-forest-900/5"></Card>
+            </>
+          ) : (
+            <>
+              {contactInfo.email && <Card className="flex items-center gap-4 p-5"><Mail className="h-5 w-5 text-leaf-500" /> {contactInfo.email}</Card>}
+              {contactInfo.phone && <Card className="flex items-center gap-4 p-5"><Phone className="h-5 w-5 text-leaf-500" /> {contactInfo.phone}</Card>}
+              {contactInfo.address && <Card className="flex items-center gap-4 p-5"><MapPin className="h-5 w-5 text-leaf-500" /> {contactInfo.address}</Card>}
+            </>
+          )}
         </div>
       </div>
     </div>

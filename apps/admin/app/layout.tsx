@@ -2,12 +2,15 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { AdminLogout } from "@/components/AdminLogout";
 
+import NextTopLoader from 'nextjs-toploader';
+
 export const metadata: Metadata = { title: "LifeTerrain Admin" };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className="font-body text-ink-900 antialiased">
+        <NextTopLoader color="#4ade80" showSpinner={false} />
         <div className="flex min-h-screen">
           <aside className="hidden w-60 flex-col bg-forest-900 p-5 text-cream md:flex">
             <div className="mb-8 flex items-center gap-3 font-display text-lg font-extrabold">
@@ -20,7 +23,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <a href="/courses" className="rounded-lg px-3 py-2 hover:bg-white/10">Courses</a>
               <a href="/users" className="rounded-lg px-3 py-2 hover:bg-white/10">Users</a>
               <a href="/enrollments" className="rounded-lg px-3 py-2 hover:bg-white/10">Enrollments</a>
-              <a href="/notifications" className="rounded-lg px-3 py-2 hover:bg-white/10">Notifications</a>
+              {process.env.NEXT_PUBLIC_ENABLE_NOTIFICATIONS === "true" && (
+                <a href="/notifications" className="rounded-lg px-3 py-2 hover:bg-white/10">Notifications</a>
+              )}
               <p className="mt-4 px-3 text-xs font-bold uppercase tracking-wide text-cream/40">Site Content</p>
               <a href="/gallery" className="rounded-lg px-3 py-2 hover:bg-white/10">Gallery</a>
               <a href="/testimonials" className="rounded-lg px-3 py-2 hover:bg-white/10">Testimonials</a>

@@ -21,9 +21,24 @@ export async function POST(req: Request) {
       },
     });
 
+    let toEmail = "anoopecothoughts@gmail.com";
+    
+    // Attempt to fetch dynamic contact settings if Admin SDK is initialized
+    if (adminDb) {
+      try {
+        const snap = await adminDb.collection("settings").doc("contact").get();
+        if (snap.exists) {
+          const data = snap.data();
+          if (data?.email) toEmail = data.email;
+        }
+      } catch (e) {
+        console.error("Failed to fetch contact settings", e);
+      }
+    }
+
     await transporter.sendMail({
       from: `"LifeTerrain" <${process.env.SMTP_USER}>`,
-      to: "anoopecothoughts@gmail.com",
+      to: toEmail,
       subject: `New Enquiry from ${name}`,
       text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\n\nMessage:\n${message}`,
     });

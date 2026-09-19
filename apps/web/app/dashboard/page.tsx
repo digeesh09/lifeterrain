@@ -78,7 +78,7 @@ export default function DashboardPage() {
               {e.status === "pending_payment" && (
                 <div className="mt-4 flex gap-3 border-t border-ink-500/10 pt-4">
                   <Button size="sm" onClick={() => router.push(`/register/${e.courseSlug}/manual-pay?id=${e.id}`)}>
-                    Submit Payment Details
+                    Complete Purchase
                   </Button>
                 </div>
               )}

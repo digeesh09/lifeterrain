@@ -3,17 +3,19 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
-  "functions": [{ "source": "services/functions", "codebase": "default", "runtime": "nodejs20" }],
+  "storage": {
+    "rules": "storage.rules"
+  },
   "hosting": [
     {
       "target": "web",
-      "public": "apps/web/out",
-      "rewrites": [{ "source": "**", "function": "nextServer" }]
+      "source": "apps/web",
+      "frameworksBackend": {}
     },
     {
       "target": "admin",
-      "public": "apps/admin/out",
-      "rewrites": [{ "source": "**", "function": "nextServer" }]
+      "source": "apps/admin",
+      "frameworksBackend": {}
     }
   ]
 }

@@ -61,4 +61,5 @@ the `courses` collection using the shape in `DATA_MODEL.md`.
 ```bash
 pnpm build
 firebase deploy
+
 ```
