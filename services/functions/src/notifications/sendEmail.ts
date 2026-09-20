@@ -1,17 +1,20 @@
 import * as functions from "firebase-functions";
 import nodemailer from "nodemailer";
 
+const port = Number(functions.config().smtp?.port ?? process.env.SMTP_PORT ?? 587);
+const user = functions.config().smtp?.user ?? process.env.SMTP_USER;
+
 const transporter = nodemailer.createTransport({
   host: functions.config().smtp?.host ?? process.env.SMTP_HOST,
-  port: Number(functions.config().smtp?.port ?? process.env.SMTP_PORT ?? 587),
-  secure: false,
+  port: port,
+  secure: port === 465, // true for 465, false for other ports
   auth: {
-    user: functions.config().smtp?.user ?? process.env.SMTP_USER,
+    user: user,
     pass: functions.config().smtp?.pass ?? process.env.SMTP_PASS,
   },
 });
 
-const FROM = '"LifeTerrain Research & Training" <no-reply@lifeterrain.in>';
+const FROM = `"LifeTerrain Research & Training" <${user ?? "no-reply@lifeterrain.in"}>`;
 
 export async function sendEnrollmentConfirmation(enrollment: { name: string; email: string; courseTitle: string; amount: number }) {
   await transporter.sendMail({

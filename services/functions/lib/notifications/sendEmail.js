@@ -41,16 +41,18 @@ exports.sendReminderEmail = sendReminderEmail;
 exports.sendCustomEmail = sendCustomEmail;
 const functions = __importStar(require("firebase-functions"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
+const port = Number(functions.config().smtp?.port ?? process.env.SMTP_PORT ?? 587);
+const user = functions.config().smtp?.user ?? process.env.SMTP_USER;
 const transporter = nodemailer_1.default.createTransport({
     host: functions.config().smtp?.host ?? process.env.SMTP_HOST,
-    port: Number(functions.config().smtp?.port ?? process.env.SMTP_PORT ?? 587),
-    secure: false,
+    port: port,
+    secure: port === 465, // true for 465, false for other ports
     auth: {
-        user: functions.config().smtp?.user ?? process.env.SMTP_USER,
+        user: user,
         pass: functions.config().smtp?.pass ?? process.env.SMTP_PASS,
     },
 });
-const FROM = '"LifeTerrain Research & Training" <no-reply@lifeterrain.in>';
+const FROM = `"LifeTerrain Research & Training" <${user ?? "no-reply@lifeterrain.in"}>`;
 async function sendEnrollmentConfirmation(enrollment) {
     await transporter.sendMail({
         from: FROM,
