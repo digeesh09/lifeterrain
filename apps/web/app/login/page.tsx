@@ -124,7 +124,30 @@ export default function LoginPage() {
             <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </FormField>
           <FormField label="Password" required>
-            <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+            <div className="flex flex-col gap-1">
+              <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+              {mode === "signin" && (
+                <button 
+                  type="button" 
+                  onClick={async () => {
+                    if (!email) {
+                      setError("Please enter your email first to reset your password.");
+                      return;
+                    }
+                    try {
+                      const { sendPasswordResetEmail } = await import("firebase/auth");
+                      await sendPasswordResetEmail(auth, email);
+                      alert(`Password reset link sent to ${email}.`);
+                    } catch (err: any) {
+                      setError(err.message);
+                    }
+                  }}
+                  className="self-end text-xs text-forest-600 hover:underline"
+                >
+                  Forgot password?
+                </button>
+              )}
+            </div>
           </FormField>
           {mode === "signup" && (
             <FormField label="Confirm Password" required>

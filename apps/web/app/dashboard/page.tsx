@@ -54,10 +54,30 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 md:px-6">
-      <h1 className="font-display text-2xl font-extrabold text-forest-700">My Enrollments</h1>
-      <p className="mt-1 text-sm text-ink-500">
-        You'll receive email &amp; WhatsApp reminders as your enrolled sessions approach.
-      </p>
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl font-extrabold text-forest-700">My Enrollments</h1>
+          <p className="mt-1 text-sm text-ink-500">
+            You'll receive email &amp; WhatsApp reminders as your enrolled sessions approach.
+          </p>
+        </div>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={async () => {
+            if (!user?.email) return;
+            try {
+              const { sendPasswordResetEmail } = await import("firebase/auth");
+              await sendPasswordResetEmail(auth, user.email);
+              alert(`Password reset link sent to ${user.email}. Please check your inbox.`);
+            } catch (e: any) {
+              alert("Error sending password reset email: " + e.message);
+            }
+          }}
+        >
+          Change Password
+        </Button>
+      </div>
 
       <div className="mt-8 flex flex-col gap-4">
         {enrollments.length === 0 && (
