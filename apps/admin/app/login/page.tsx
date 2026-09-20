@@ -21,7 +21,11 @@ function AdminLoginForm() {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/");
     } catch (err: any) {
-      setError(err.message);
+      if (err.code === "auth/invalid-credential" || err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
+        setError("Invalid email or password. Please try again.");
+      } else {
+        setError(err.message || "An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }

@@ -77,7 +77,13 @@ export default function LoginPage() {
       }
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message);
+      if (err.code === "auth/invalid-credential" || err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
+        setError("Invalid email or password. Please try again.");
+      } else if (err.code === "auth/email-already-in-use") {
+        setError("An account with this email already exists.");
+      } else {
+        setError(err.message || "An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }
@@ -95,7 +101,7 @@ export default function LoginPage() {
       }, { merge: true });
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Failed to sign in with Google.");
     }
   }
 
