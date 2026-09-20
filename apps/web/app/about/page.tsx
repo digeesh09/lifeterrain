@@ -1,6 +1,6 @@
 import { AboutSplit, TeamSection, StatsBand, CTABanner, SectionHeading, Reveal, StaggerGroup, StaggerItem, WaveDivider } from "@lifeterrain/ui";
 import { Leaf, GraduationCap, Building2, Globe2, Sprout } from "lucide-react";
-import { getTeamMembers } from "@/lib/content";
+import { getTeamMembers, getStats } from "@/lib/content";
 
 export const revalidate = 60;
 
@@ -18,7 +18,10 @@ const FOCUS_AREAS = [
 ];
 
 export default async function AboutPage() {
-  const team = await getTeamMembers();
+  const [team, stats] = await Promise.all([
+    getTeamMembers(),
+    getStats()
+  ]);
 
   return (
     <>
@@ -30,14 +33,7 @@ export default async function AboutPage() {
         </p>
       </div>
 
-      <StatsBand
-        stats={[
-          { value: 3, label: "Live Programmes Launched" },
-          { value: 10, label: "Days of Practical Training" },
-          { value: 100, suffix: "%", label: "Online & Interactive" },
-          { value: 2, label: "Expert Resource Persons" },
-        ]}
-      />
+      <StatsBand stats={stats} />
 
       <AboutSplit
         eyebrow="What We Do"

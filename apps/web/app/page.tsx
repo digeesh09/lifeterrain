@@ -1,6 +1,6 @@
 import { Hero, StatsBand, WhyChooseUs, AboutSplit, TeamSection, TestimonialSection, GalleryBand, FAQSection, CTABanner, WaveDivider, PartnerStrip, NewsletterBand, Reveal, SectionHeading, Button } from "@lifeterrain/ui";
 import { listOpenCourses } from "@/lib/courses";
-import { getLatestGalleryPhotos, getTestimonials, getTeamMembers, getFAQs } from "@/lib/content";
+import { getLatestGalleryPhotos, getTestimonials, getTeamMembers, getFAQs, getStats } from "@/lib/content";
 import CourseGridClient from "./courses/CourseGridClient";
 import Link from "next/link";
 import { subscribeToNewsletter } from "./actions";
@@ -17,26 +17,20 @@ export const metadata = {
   }
 };
 
-const STATS = [
-  { value: 3, label: "Live Programmes Launched" },
-  { value: 10, label: "Days of Practical Training" },
-  { value: 100, suffix: "%", label: "Online & Interactive" },
-  { value: 2, label: "Expert Resource Persons" },
-];
-
 export default async function HomePage() {
-  const [courses, latestPhotos, testimonials, team, faqs] = await Promise.all([
+  const [courses, latestPhotos, testimonials, team, faqs, stats] = await Promise.all([
     listOpenCourses().catch(() => []),
     getLatestGalleryPhotos(4),
     getTestimonials(),
     getTeamMembers(),
     getFAQs(),
+    getStats(),
   ]);
 
   return (
     <>
       <Hero />
-      <StatsBand stats={STATS} />
+      <StatsBand stats={stats} />
 
       <Reveal>
         <AboutSplit

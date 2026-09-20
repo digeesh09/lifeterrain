@@ -132,3 +132,26 @@ export async function getFAQs(): Promise<FAQItem[]> {
     return FALLBACK_FAQS;
   }
 }
+
+import { doc, getDoc } from "firebase/firestore";
+
+export async function getStats() {
+  try {
+    const snap = await getDoc(doc(db, "settings", "stats"));
+    if (snap.exists()) {
+      const data = snap.data();
+      return [
+        { value: data.programmes || 3, label: "Live Programmes Launched" },
+        { value: data.days || 10, label: "Days of Practical Training" },
+        { value: data.interactive || 100, suffix: "%", label: "Online & Interactive" },
+        { value: data.experts || 2, label: "Expert Resource Persons" },
+      ];
+    }
+  } catch {}
+  return [
+    { value: 3, label: "Live Programmes Launched" },
+    { value: 10, label: "Days of Practical Training" },
+    { value: 100, suffix: "%", label: "Online & Interactive" },
+    { value: 2, label: "Expert Resource Persons" },
+  ];
+}

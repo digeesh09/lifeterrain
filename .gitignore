@@ -2,7 +2,7 @@ node_modules/
 .next/
 .turbo/
 dist/
-lib/
+
 _code_archive*/
 *.zip
 

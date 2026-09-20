@@ -206,7 +206,7 @@ export default function AdminCoursesPage() {
             </div>
             <div className="flex shrink-0 items-center gap-3">
               <Badge tone={c.status === "open" ? "leaf" : "gold"}>{c.status}</Badge>
-              <a href={`http://localhost:3000/courses/${c.slug}`} target="_blank" rel="noreferrer">
+              <a href={`${process.env.NEXT_PUBLIC_WEB_URL || "https://www.lifeterrain.com"}/courses/${c.slug}`} target="_blank" rel="noreferrer">
                 <Button size="sm" variant="ghost">View Details</Button>
               </a>
               <Button size="sm" variant="outline" onClick={() => edit(c)}>Edit</Button>

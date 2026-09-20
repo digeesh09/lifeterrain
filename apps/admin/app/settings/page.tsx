@@ -16,6 +16,10 @@ export default function SettingsPage() {
 
   const [savingAuth, setSavingAuth] = useState(false);
   const [authMessage, setAuthMessage] = useState("");
+  
+  const [statsSettings, setStatsSettings] = useState<any>({ programmes: 3, days: 5, interactive: 1, experts: 5 });
+  const [savingStats, setSavingStats] = useState(false);
+  const [statsMessage, setStatsMessage] = useState("");
 
   useEffect(() => {
     getDoc(doc(db, "settings", "payment")).then((snap) => {
@@ -27,7 +31,24 @@ export default function SettingsPage() {
     getDoc(doc(db, "settings", "auth")).then((snap) => {
       if (snap.exists()) setAuthSettings(snap.data());
     });
+    getDoc(doc(db, "settings", "stats")).then((snap) => {
+      if (snap.exists()) setStatsSettings(snap.data());
+    });
   }, []);
+
+  async function handleSaveStats(e: React.FormEvent) {
+    e.preventDefault();
+    setSavingStats(true);
+    setStatsMessage("");
+    try {
+      await setDoc(doc(db, "settings", "stats"), statsSettings);
+      setStatsMessage("Stats settings saved successfully.");
+    } catch (err: any) {
+      setStatsMessage("Failed to save: " + err.message);
+    } finally {
+      setSavingStats(false);
+    }
+  }
 
   async function handleSavePayment(e: React.FormEvent) {
     e.preventDefault();
@@ -153,6 +174,59 @@ export default function SettingsPage() {
             {savingContact ? "Saving..." : "Save Contact Info"}
           </button>
           {contactMessage && <p className="text-sm font-semibold text-forest-700">{contactMessage}</p>}
+        </form>
+      </div>
+
+      {/* Stats Settings */}
+      <div>
+        <h1 className="font-display text-2xl font-bold text-forest-700">Statistics Settings</h1>
+        <p className="mb-4 text-sm text-ink-500">Configure the statistics shown on the home and about pages.</p>
+        
+        <form onSubmit={handleSaveStats} className="flex flex-col gap-5 rounded-xl bg-white p-6 shadow-sm">
+          <div>
+            <label className="block text-sm font-semibold text-ink-700">Live Programmes Launched</label>
+            <input 
+              type="number" required
+              value={statsSettings.programmes} 
+              onChange={e => setStatsSettings({...statsSettings, programmes: Number(e.target.value)})}
+              className="mt-1 block w-full rounded-md border border-ink-500/20 px-3 py-2"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-ink-700">Days of Practical Training</label>
+            <input 
+              type="number" required
+              value={statsSettings.days} 
+              onChange={e => setStatsSettings({...statsSettings, days: Number(e.target.value)})}
+              className="mt-1 block w-full rounded-md border border-ink-500/20 px-3 py-2"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-ink-700">Online & Interactive</label>
+            <input 
+              type="number" required
+              value={statsSettings.interactive} 
+              onChange={e => setStatsSettings({...statsSettings, interactive: Number(e.target.value)})}
+              className="mt-1 block w-full rounded-md border border-ink-500/20 px-3 py-2"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-ink-700">Expert Resource Persons</label>
+            <input 
+              type="number" required
+              value={statsSettings.experts} 
+              onChange={e => setStatsSettings({...statsSettings, experts: Number(e.target.value)})}
+              className="mt-1 block w-full rounded-md border border-ink-500/20 px-3 py-2"
+            />
+          </div>
+          <button 
+            type="submit" 
+            disabled={savingStats}
+            className="mt-2 w-fit rounded-lg bg-leaf-500 px-4 py-2 font-semibold text-white hover:bg-leaf-600 disabled:opacity-50"
+          >
+            {savingStats ? "Saving..." : "Save Statistics"}
+          </button>
+          {statsMessage && <p className="text-sm font-semibold text-forest-700">{statsMessage}</p>}
         </form>
       </div>
 

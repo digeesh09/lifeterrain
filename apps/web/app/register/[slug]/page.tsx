@@ -15,6 +15,7 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [paymentSettings, setPaymentSettings] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
     getCourseBySlug(slug).then(setCourse);
@@ -27,15 +28,33 @@ export default function RegisterPage() {
       import("firebase/auth").then(({ onAuthStateChanged }) => {
         onAuthStateChanged(auth, async (user) => {
           if (user) {
+            setIsLoggedIn(true);
             const userSnap = await getDoc(doc(db, "users", user.uid));
             if (userSnap.exists()) setUserProfile(userSnap.data());
+          } else {
+            setIsLoggedIn(false);
           }
         });
       });
     });
   }, [slug]);
 
-  if (!course || !paymentSettings) return <div className="flex justify-center py-24"><Spinner /></div>;
+  if (!course || !paymentSettings || isLoggedIn === null) return <div className="flex justify-center py-24"><Spinner /></div>;
+
+  if (isLoggedIn === false) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-24 text-center md:px-6">
+        <h1 className="mb-4 font-display text-3xl font-extrabold text-forest-700">Login Required</h1>
+        <p className="mb-8 text-lg text-ink-600">Please login or create an account to enroll in <b>{course.title}</b>.</p>
+        <button
+          onClick={() => router.push(`/login`)}
+          className="rounded-lg bg-leaf-500 px-8 py-3 font-bold text-white hover:bg-leaf-600 transition-colors"
+        >
+          Login / Register
+        </button>
+      </div>
+    );
+  }
 
   const activeFee =
     course.earlyBirdFee && course.earlyBirdDeadline && new Date() <= new Date(course.earlyBirdDeadline)

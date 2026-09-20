@@ -32,8 +32,9 @@ export function ResourcePersonsEditor({
   return (
     <div className="flex flex-col gap-4 rounded-lg border border-ink-500/20 p-4">
       {persons.map((p, i) => (
-        <div key={i} className="flex flex-col gap-3 rounded-md bg-ink-50 p-5 relative border border-ink-500/10">
-          <div className="absolute right-3 top-3">
+        <div key={i} className="flex flex-col gap-3 rounded-md bg-ink-50 p-5 border border-ink-500/10">
+          <div className="flex items-center justify-between mb-1">
+            <span className="font-bold text-sm text-forest-700">Person {i + 1}</span>
             <button
               type="button"
               className="rounded-md bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-600 transition-colors hover:bg-red-100 hover:text-red-700"
@@ -43,7 +44,7 @@ export function ResourcePersonsEditor({
             </button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-ink-500 font-semibold mb-1 block">Name</label>
               <Input
