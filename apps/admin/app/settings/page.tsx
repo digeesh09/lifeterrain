@@ -213,11 +213,29 @@ export default function SettingsPage() {
                     
                     try {
                       setSavingPayment(true);
-                      const { ref, uploadBytes, getDownloadURL } = await import("firebase/storage");
-                      const { storage } = await import("@/lib/firebase");
-                      const storageRef = ref(storage, `settings/qr_${Date.now()}_${file.name}`);
-                      await uploadBytes(storageRef, file);
-                      const downloadUrl = await getDownloadURL(storageRef);
+                      
+                      const mode = process.env.NEXT_PUBLIC_STORAGE_MODE || 'local';
+                      let downloadUrl = "";
+
+                      if (mode === 'cloud') {
+                        const { ref, uploadBytes, getDownloadURL } = await import("firebase/storage");
+                        const { storage } = await import("@/lib/firebase");
+                        const storageRef = ref(storage, `settings/qr_${Date.now()}_${file.name}`);
+                        await uploadBytes(storageRef, file);
+                        downloadUrl = await getDownloadURL(storageRef);
+                      } else {
+                        // Physical/Local Storage
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        const res = await fetch('/api/upload', {
+                          method: 'POST',
+                          body: formData
+                        });
+                        const data = await res.json();
+                        if (!data.success) throw new Error(data.error);
+                        downloadUrl = data.url;
+                      }
+
                       setPaymentSettings({...paymentSettings, qrCodeUrl: downloadUrl});
                     } catch (error: any) {
                       alert("Failed to upload image: " + error.message);
@@ -227,7 +245,7 @@ export default function SettingsPage() {
                   }}
                   className="mt-1 block w-full rounded-md border border-ink-500/20 px-3 py-2 text-sm"
                 />
-                <p className="mt-1 text-xs text-ink-500">Max size: 2MB. The image will be securely uploaded to Firebase Storage.</p>
+                <p className="mt-1 text-xs text-ink-500">Max size: 2MB. The image will be securely uploaded to {process.env.NEXT_PUBLIC_STORAGE_MODE === 'cloud' ? 'Firebase Storage' : 'local server'}.</p>
               </div>
             </>
           )}
