@@ -5,6 +5,7 @@ import { useAdminGuard } from "@/lib/useAdminGuard";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, orderBy, query } from "firebase/firestore";
 import { Button, Card, FormField, Input, Spinner } from "@lifeterrain/ui";
+import { RichTextEditor } from "../courses/RichTextEditor";
 
 interface MemberRow {
   id: string;
@@ -123,7 +124,9 @@ export default function AdminTeamPage() {
             <FormField label="Role / Title" required><Input required value={form.role} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, role: e.target.value })} /></FormField>
             <div className="sm:col-span-2">
               <FormField label="Bio" required>
-                <textarea required className="min-h-24 w-full rounded-lg border border-ink-500/20 px-4 py-2.5" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} />
+                <div className="mt-1 border border-ink-500/20 rounded-lg overflow-hidden">
+                  <RichTextEditor value={form.bio} onChange={(val) => setForm({ ...form, bio: val })} />
+                </div>
               </FormField>
             </div>
             <div className="sm:col-span-2">
@@ -158,7 +161,7 @@ export default function AdminTeamPage() {
             <img src={m.photoUrl} alt={m.name} className="h-20 w-20 rounded-full object-cover" />
             <p className="mt-3 font-display font-bold text-ink-900">{m.name}</p>
             <p className="text-xs text-leaf-700">{m.role}</p>
-            <p className="mt-2 text-xs text-ink-500">{m.bio}</p>
+            <div className="mt-2 text-xs text-ink-500 text-left line-clamp-3 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: m.bio }} />
             <div className="mt-3 flex gap-2">
               <Button size="sm" variant="outline" onClick={() => edit(m)}>Edit</Button>
               <Button size="sm" variant="ghost" onClick={() => remove(m.id)}>Delete</Button>

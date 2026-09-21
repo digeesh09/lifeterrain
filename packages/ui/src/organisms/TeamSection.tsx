@@ -15,7 +15,10 @@ export function TeamSection({ members }: { members: TeamMember[] }) {
             </div>
             <h3 className="mt-4 font-display font-bold text-forest-700">{m.name}</h3>
             <p className="text-xs font-semibold uppercase tracking-wide text-leaf-600">{m.role}</p>
-            <div className="mt-4 text-sm text-ink-600 text-left whitespace-pre-wrap">{m.bio}</div>
+            <div 
+              className="mt-4 text-sm text-ink-600 text-left prose prose-sm prose-leaf max-w-none"
+              dangerouslySetInnerHTML={{ __html: m.bio }} 
+            />
           </div>
         ))}
       </div>
