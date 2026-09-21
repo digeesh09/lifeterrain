@@ -55,6 +55,7 @@ export function Lightbox({ images, categories }: { images: GalleryImage[]; categ
                 alt={img.alt}
                 width={600}
                 height={400}
+                unoptimized={true}
                 className="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
             )}
@@ -100,6 +101,7 @@ export function Lightbox({ images, categories }: { images: GalleryImage[]; categ
                   alt={filtered[openIndex].alt}
                   width={1200}
                   height={800}
+                  unoptimized={true}
                   className="h-auto max-h-[65vh] w-full rounded-xl2 object-contain"
                 />
               )}
