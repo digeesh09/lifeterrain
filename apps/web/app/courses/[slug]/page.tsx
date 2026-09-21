@@ -92,8 +92,8 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
             {course.resourcePersons.map((r) => (
               <div key={r.name} className="text-center">
                 <div className="relative mx-auto h-20 w-20 overflow-hidden rounded-full bg-leaf-100">
-                  {r.photoUrl && (
-                    <Image src={r.photoUrl} alt={r.name} fill unoptimized={true} className="object-cover" sizes="80px" />
+                  {(r.imageUrl || r.photoUrl) && (
+                    <Image src={r.imageUrl || r.photoUrl} alt={r.name} fill unoptimized={true} className="object-cover" sizes="80px" />
                   )}
                 </div>
                 <p className="mt-2 font-semibold text-ink-900">{r.name}</p>

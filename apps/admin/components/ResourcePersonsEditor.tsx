@@ -80,18 +80,29 @@ export function ResourcePersonsEditor({
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
-                    if (file.size > 800000) {
-                      alert("Image too large. Max 800KB.");
-                      return;
+                    
+                    const formData = new FormData();
+                    formData.append("file", file);
+
+                    try {
+                      const res = await fetch("/api/upload", {
+                        method: "POST",
+                        body: formData,
+                      });
+                      
+                      const data = await res.json();
+                      if (data.success) {
+                        updatePerson(i, { imageUrl: data.url });
+                      } else {
+                        alert(data.error || "Upload failed");
+                      }
+                    } catch (err: any) {
+                      console.error("Upload error:", err);
+                      alert("Upload failed: " + err.message);
                     }
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                      updatePerson(i, { imageUrl: ev.target?.result as string });
-                    };
-                    reader.readAsDataURL(file);
                   }}
                   className="text-xs w-48 border border-ink-500/20 rounded-md py-1.5 px-2 bg-white"
                 />
