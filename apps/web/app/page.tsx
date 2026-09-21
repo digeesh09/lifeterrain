@@ -5,7 +5,7 @@ import CourseGridClient from "./courses/CourseGridClient";
 import Link from "next/link";
 import { subscribeToNewsletter } from "./actions";
 
-export const revalidate = 60;
+export const revalidate = 10;
 
 export const metadata = {
   title: "LifeTerrain | Bridging Scientific Research and Practice",

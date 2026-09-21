@@ -2,7 +2,7 @@ import { AboutSplit, TeamSection, StatsBand, CTABanner, SectionHeading, Reveal, 
 import { Leaf, GraduationCap, Building2, Globe2, Sprout } from "lucide-react";
 import { getTeamMembers, getStats } from "@/lib/content";
 
-export const revalidate = 60;
+export const revalidate = 10;
 
 export const metadata = {
   title: "About Us | LifeTerrain",

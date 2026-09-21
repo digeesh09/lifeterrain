@@ -1,7 +1,7 @@
 import { listOpenCourses } from "@/lib/courses";
 import CourseGridClient from "./CourseGridClient";
 
-export const revalidate = 60;
+export const revalidate = 10;
 
 export const metadata = {
   title: "Courses & Workshops | LifeTerrain",

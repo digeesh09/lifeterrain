@@ -2,7 +2,7 @@ import { Lightbox, CTABanner, Reveal } from "@lifeterrain/ui";
 import { getGalleryPhotos } from "@/lib/content";
 
 export const metadata = { title: "Gallery — LifeTerrain Research & Training" };
-export const revalidate = 60;
+export const revalidate = 10;
 
 export default async function GalleryPage() {
   const photos = await getGalleryPhotos();

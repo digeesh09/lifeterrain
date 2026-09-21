@@ -6,7 +6,7 @@ import Image from "next/image";
 import { CalendarDays, Clock, Laptop, Users } from "lucide-react";
 import { BrochureViewer } from "./BrochureViewer";
 
-export const revalidate = 60;
+export const revalidate = 10;
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const course = await getCourseBySlug(params.slug);
