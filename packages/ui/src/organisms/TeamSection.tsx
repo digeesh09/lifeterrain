@@ -11,11 +11,11 @@ export function TeamSection({ members }: { members: TeamMember[] }) {
         {members.map((m) => (
           <div key={m.name} className="group text-center">
             <div className="relative mx-auto h-32 w-32 overflow-hidden rounded-full shadow-card ring-4 ring-white transition-shadow duration-300 group-hover:shadow-xl">
-              <Image src={m.photoUrl} alt={m.name} fill className="object-cover transition-transform duration-500 group-hover:scale-110" sizes="128px" />
+              <Image src={m.photoUrl} alt={m.name} fill unoptimized={true} className="object-cover transition-transform duration-500 group-hover:scale-110" sizes="128px" />
             </div>
             <h3 className="mt-4 font-display font-bold text-forest-700">{m.name}</h3>
             <p className="text-xs font-semibold uppercase tracking-wide text-leaf-600">{m.role}</p>
-            <p className="mt-2 text-sm text-ink-500">{m.bio}</p>
+            <div className="mt-4 text-sm text-ink-600 text-left whitespace-pre-wrap">{m.bio}</div>
           </div>
         ))}
       </div>
