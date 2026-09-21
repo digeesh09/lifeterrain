@@ -19,12 +19,12 @@ export async function POST(request: Request) {
 
     // 1. Validate File Size
     if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json({ success: false, error: 'File size exceeds 5MB limit' }, { status: 413 });
+      return NextResponse.json({ success: false, error: 'File size exceeds 50MB limit' }, { status: 413 });
     }
 
     // 2. Validate MIME Type
     if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-      return NextResponse.json({ success: false, error: 'Invalid file type. Only JPG, PNG, WEBP, and PDF are allowed.' }, { status: 415 });
+      return NextResponse.json({ success: false, error: 'Invalid file type. Only JPG, PNG, WEBP, PDF, and MP4/WEBM are allowed.' }, { status: 415 });
     }
 
     // 3. Validate Extension
