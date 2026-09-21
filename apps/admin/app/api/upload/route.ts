@@ -4,9 +4,9 @@ import { join, extname } from 'path';
 import fs from 'fs';
 
 // OWASP Security Constraints
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
-const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
-const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.pdf'];
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB to allow videos
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf', 'video/mp4', 'video/webm'];
+const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.pdf', '.mp4', '.webm'];
 
 export async function POST(request: Request) {
   try {
