@@ -93,7 +93,7 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
               <div key={r.name} className="text-center">
                 <div className="relative mx-auto h-20 w-20 overflow-hidden rounded-full bg-leaf-100">
                   {(r.imageUrl || r.photoUrl) && (
-                    <Image src={r.imageUrl || r.photoUrl} alt={r.name} fill unoptimized={true} className="object-cover" sizes="80px" />
+                    <Image src={(r.imageUrl || r.photoUrl) as string} alt={r.name} fill unoptimized={true} className="object-cover" sizes="80px" />
                   )}
                 </div>
                 <p className="mt-2 font-semibold text-ink-900">{r.name}</p>
