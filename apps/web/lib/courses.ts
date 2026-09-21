@@ -6,7 +6,7 @@ export interface CourseDoc extends CourseSummary {
   description: string;
   coverImageUrl?: string;
   curriculum: { day: string; heading: string; points: string[] }[];
-  resourcePersons: { name: string; role: string; photoUrl?: string }[];
+  resourcePersons: { name: string; role: string; photoUrl?: string; imageUrl?: string; }[];
 }
 
 export async function listOpenCourses(): Promise<CourseDoc[]> {
