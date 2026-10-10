@@ -107,10 +107,10 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
       <div className="sticky bottom-4 mt-10 flex items-center justify-between rounded-xl2 bg-forest-700 p-5 text-white shadow-card">
         <div>
           <p className="text-sm text-cream/70">Course Fee</p>
-          <p className="font-display text-2xl font-extrabold">₹{course.fee}</p>
+          <p className="font-display text-2xl font-extrabold">{course.fee === 0 ? "Free" : `₹${course.fee}`}</p>
         </div>
         <Link href={`/register/${course.slug}`}>
-          <Button variant="secondary" size="lg">Register & Pay</Button>
+          <Button variant="secondary" size="lg">{course.fee === 0 ? "Register" : "Register & Pay"}</Button>
         </Link>
       </div>
         </div>

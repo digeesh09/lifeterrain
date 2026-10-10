@@ -24,11 +24,13 @@ export function RegistrationForm({
   submitting,
   onSubmit,
   initialValues,
+  isFree = false,
 }: {
   feeLabel: string;
   submitting?: boolean;
   onSubmit: (values: RegistrationValues) => void;
   initialValues?: Partial<RegistrationValues>;
+  isFree?: boolean;
 }) {
   const [values, setValues] = useState<RegistrationValues>({
     name: initialValues?.name || "",
@@ -55,8 +57,8 @@ export function RegistrationForm({
 
   return (
     <Card className="mx-auto max-w-xl p-6 md:p-8">
-      <h3 className="font-display text-xl font-bold text-forest-700">Register &amp; Pay to Enroll</h3>
-      <p className="mt-1 text-sm text-ink-500">Course fee: <span className="font-semibold text-forest-700">{feeLabel}</span></p>
+      <h3 className="font-display text-xl font-bold text-forest-700">{isFree ? "Register for Course" : "Register & Pay to Enroll"}</h3>
+      <p className="mt-1 text-sm text-ink-500">{isFree ? "Course fee:" : "Course fee:"} <span className="font-semibold text-forest-700">{feeLabel}</span></p>
       <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
         <FormField label="Full Name" required>
           <Input required value={values.name} onChange={update("name")} placeholder="As per certificate" />
@@ -77,10 +79,10 @@ export function RegistrationForm({
           <Input value={values.hearAbout} onChange={update("hearAbout")} />
         </FormField>
         <Button type="submit" size="lg" loading={submitting} className="mt-2">
-          Proceed to Payment
+          {isFree ? "Complete Registration" : "Proceed to Payment"}
         </Button>
         <p className="text-center text-xs text-ink-500">
-          Secure payment via Razorpay. You'll get an email &amp; WhatsApp confirmation instantly.
+          {isFree ? "You'll get an email & WhatsApp confirmation instantly." : "Secure payment via Razorpay. You'll get an email & WhatsApp confirmation instantly."}
         </p>
       </form>
     </Card>

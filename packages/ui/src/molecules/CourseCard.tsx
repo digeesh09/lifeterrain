@@ -59,8 +59,10 @@ export function CourseCard({ course, onView }: { course: CourseSummary; onView?:
         </div>
         <div className="mt-auto flex items-center justify-between pt-3">
           <div>
-            <span className="font-display text-xl font-bold text-forest-700">₹{course.fee}</span>
-            {course.earlyBirdFee && (
+            <span className="font-display text-xl font-bold text-forest-700">
+              {course.fee === 0 ? "Free" : `₹${course.fee}`}
+            </span>
+            {course.earlyBirdFee && course.fee !== 0 && (
               <span className="ml-2 text-xs text-ink-500 line-through">₹{course.earlyBirdFee}</span>
             )}
           </div>

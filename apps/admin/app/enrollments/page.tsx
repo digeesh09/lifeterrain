@@ -15,9 +15,26 @@ export default function AdminEnrollmentsPage() {
     return onSnapshot(q, (snap) => setRows(snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }))));
   }, []);
 
-  async function verifyPayment(id: string) {
+  async function verifyPayment(enrollment: any) {
+    let refNum = null;
+    if (!enrollment.utrNumber) {
+      refNum = window.prompt("Enter Transaction Reference Number (Optional):");
+      if (refNum === null) return; // user cancelled
+    }
+
     if (confirm("Mark this payment as confirmed?")) {
-      await updateDoc(doc(db, "enrollments", id), { status: "confirmed", updatedAt: new Date() });
+      const payload: any = { status: "confirmed", updatedAt: new Date() };
+      if (refNum && refNum.trim()) {
+        payload.adminTransactionReference = refNum.trim();
+      }
+      await updateDoc(doc(db, "enrollments", enrollment.id), payload);
+    }
+  }
+
+  async function deleteEnrollment(id: string) {
+    if (confirm("Are you sure you want to delete this enrollment? This action cannot be undone.")) {
+      const { deleteDoc } = await import("firebase/firestore");
+      await deleteDoc(doc(db, "enrollments", id));
     }
   }
 
@@ -74,11 +91,13 @@ export default function AdminEnrollmentsPage() {
                     </Badge>
                   </div>
                   {r.utrNumber && <p className="text-xs text-ink-500 mt-1 font-mono">UTR: {r.utrNumber}</p>}
+                  {r.adminTransactionReference && <p className="text-xs text-ink-500 mt-1 font-mono">Ref: {r.adminTransactionReference}</p>}
                 </td>
-                <td className="px-4 py-3 align-top text-right">
+                <td className="px-4 py-3 align-top text-right flex flex-col gap-2 items-end">
                   {r.status === "pending_verification" && (
-                    <Button size="sm" onClick={() => verifyPayment(r.id)}>Confirm</Button>
+                    <Button size="sm" onClick={() => verifyPayment(r)}>Confirm</Button>
                   )}
+                  <Button size="sm" variant="ghost" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => deleteEnrollment(r.id)}>Delete</Button>
                 </td>
               </tr>
             ))}

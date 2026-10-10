@@ -20,7 +20,7 @@ interface CourseRow {
   coverImageUrl?: string;
 }
 
-const emptyForm = { title: "", slug: "", tagline: "", startDate: "", endDate: "", time: "", mode: "Online | Live Interactive", fee: 0, earlyBirdFee: 0, description: "", status: "upcoming", coverImageUrl: "" };
+const emptyForm = { title: "", slug: "", tagline: "", startDate: "", endDate: "", time: "", mode: "Online | Live Interactive", courseType: "paid", fee: 0, earlyBirdFee: 0, description: "", status: "upcoming", coverImageUrl: "" };
 
 function toDateInputValue(value: unknown): string {
   if (!value) return "";
@@ -121,8 +121,9 @@ export default function AdminCoursesPage() {
         endDate: form.endDate || null,
         time: form.time || null,
         mode: form.mode || "Online",
-        fee: form.fee,
-        earlyBirdFee: form.earlyBirdFee || null,
+        courseType: form.courseType || "paid",
+        fee: form.courseType === "free" ? 0 : form.fee,
+        earlyBirdFee: form.courseType === "free" ? null : (form.earlyBirdFee || null),
         status: form.status,
         coverImageUrl: form.coverImageUrl,
         meetingLink: form.meetingLink || "",
@@ -201,7 +202,7 @@ export default function AdminCoursesPage() {
               )}
               <div>
                 <p className="truncate font-display font-bold text-ink-900">{c.title}</p>
-                <p className="text-sm text-ink-500">{c.startDate} · ₹{c.fee}</p>
+                <p className="text-sm text-ink-500">{c.startDate} · {c.fee === 0 ? "Free" : `₹${c.fee}`}</p>
               </div>
             </div>
             <div className="flex shrink-0 items-center gap-3">
@@ -241,8 +242,18 @@ export default function AdminCoursesPage() {
           <FormField label="End Date"><Input type="date" value={form.endDate} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, endDate: e.target.value })} /></FormField>
           <FormField label="Time"><Input value={form.time} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, time: e.target.value })} placeholder="7:30 - 8:30 PM IST" /></FormField>
           <FormField label="Mode"><Input value={form.mode} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, mode: e.target.value })} /></FormField>
-          <FormField label="Fee (₹)" required><Input type="number" required value={form.fee} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, fee: Number(e.target.value) })} /></FormField>
-          <FormField label="Early-bird Fee (₹)"><Input type="number" value={form.earlyBirdFee} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, earlyBirdFee: Number(e.target.value) })} /></FormField>
+          <FormField label="Course Type">
+            <select className="rounded-lg border border-ink-500/20 px-4 py-2.5 w-full" value={form.courseType || "paid"} onChange={(e) => setForm({ ...form, courseType: e.target.value })}>
+              <option value="paid">Paid</option>
+              <option value="free">Free</option>
+            </select>
+          </FormField>
+          {form.courseType !== "free" && (
+            <>
+              <FormField label="Fee (₹)" required><Input type="number" required value={form.fee} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, fee: Number(e.target.value) })} /></FormField>
+              <FormField label="Early-bird Fee (₹)"><Input type="number" value={form.earlyBirdFee} onChange={(e: ChangeEvent<HTMLInputElement>) => setForm({ ...form, earlyBirdFee: Number(e.target.value) })} /></FormField>
+            </>
+          )}
           <FormField label="Status">
             <select className="rounded-lg border border-ink-500/20 px-4 py-2.5" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
               <option value="upcoming">Upcoming</option>

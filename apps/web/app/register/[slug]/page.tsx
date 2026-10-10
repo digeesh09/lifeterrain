@@ -65,19 +65,21 @@ export default function RegisterPage() {
     setSubmitting(true);
     setError(null);
     try {
-      // 1. Create a pending enrollment record first — this is what the
-      //    Cloud Function verifies the payment against.
+      // 1. Create the enrollment record
+      // If free, it can be securely created as 'confirmed' directly. Otherwise, 'pending_payment'.
       const enrollmentRef = await addDoc(collection(db, "enrollments"), {
         ...values,
         courseSlug: course!.slug,
         courseTitle: course!.title,
         amount: activeFee,
-        status: "pending_payment",
+        status: activeFee === 0 ? "confirmed" : "pending_payment",
         createdAt: serverTimestamp(),
       });
 
-      // 2. Launch Razorpay or redirect to manual payment
-      if (paymentSettings?.mode === "manual") {
+      // 2. Handle routing for free vs paid course
+      if (activeFee === 0) {
+        router.push(`/dashboard?enrolled=${course!.slug}`);
+      } else if (paymentSettings?.mode === "manual") {
         router.push(`/register/${course!.slug}/manual-pay?id=${enrollmentRef.id}`);
       } else {
         await payForEnrollment({
@@ -104,7 +106,7 @@ export default function RegisterPage() {
       <h1 className="mb-2 font-display text-2xl font-extrabold text-forest-700">{course.title}</h1>
       {error && <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</p>}
       <RegistrationForm
-        feeLabel={`₹${activeFee}`}
+        feeLabel={activeFee === 0 ? "Free" : `₹${activeFee}`}
         submitting={submitting}
         onSubmit={handleSubmit}
         initialValues={{
@@ -113,6 +115,7 @@ export default function RegisterPage() {
           phone: userProfile?.phone || "",
           organisation: userProfile?.institution || "",
         }}
+        isFree={activeFee === 0}
       />
     </div>
   );

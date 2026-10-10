@@ -81,7 +81,7 @@ service cloud.firestore {
     match /enrollments/{enrollmentId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.email == request.auth.token.email);
       allow create: if isSignedIn() &&
-        request.resource.data.status == "pending_payment" &&
+        (request.resource.data.status == "pending_payment" || (request.resource.data.status == "confirmed" && request.resource.data.amount == 0)) &&
         isValidString(request.resource.data.courseSlug, 1, 100) &&
         isValidString(request.resource.data.courseTitle, 1, 200) &&
         request.resource.data.amount is number && request.resource.data.amount >= 0 &&
